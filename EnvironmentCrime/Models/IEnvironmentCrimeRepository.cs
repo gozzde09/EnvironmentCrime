@@ -7,5 +7,7 @@
     IQueryable<ErrandStatus> ErrandStatuses { get; }
     IQueryable<Errand> Errands { get; }
 
+    Task<Errand?> GetErrandDetails(string id);
+
   }
 }

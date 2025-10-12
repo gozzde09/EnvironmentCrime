@@ -17,9 +17,9 @@
 	<tr>
 		<td>
 			<select name="status">
-				@foreach (var erStatus in Model.ErrandStatuses)
+				@foreach (var errandStatus in Model.ErrandStatuses)
 				{
-					<option value="@erStatus.StatusId">@erStatus.StatusName</option>
+					<option value="@errandStatus.StatusId">@errandStatus.StatusName</option>
 				}
 			</select>
 		</td>

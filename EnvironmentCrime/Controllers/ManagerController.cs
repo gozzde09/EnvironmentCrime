@@ -10,10 +10,10 @@ namespace EnvironmentCrime.Controllers
     {
       repository = repo;
     }
-    public ViewResult CrimeManager()
+    public ViewResult CrimeManager(string id)
     {
-    
-      return View();
+      ViewBag.ID = id;
+      return View(repository);
     }
 
     public ViewResult StartManager()

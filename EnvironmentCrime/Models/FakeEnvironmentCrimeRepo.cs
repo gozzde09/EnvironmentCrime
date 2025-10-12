@@ -95,8 +95,8 @@
                 DepartmentId = "Ej tillsatt",
                 EmployeeId = "Ej tillsatt"
             }
-        }.AsQueryable(); 
- 
+        }.AsQueryable();
+
     public IQueryable<ErrandStatus> ErrandStatuses => new List<ErrandStatus>
         {
             new ErrandStatus { StatusId= "S_A", StatusName = "Rapporterad" },
@@ -104,5 +104,15 @@
             new ErrandStatus { StatusId= "S_C", StatusName = "Startad" },
             new ErrandStatus { StatusId= "S_D", StatusName = "Färdig" }
         }.AsQueryable();
+
+
+     public Task<Errand?> GetErrandDetails(string id)
+        {
+            return Task.Run(() =>
+            {
+                var errandDetail = Errands.Where(er => er.ErrandId == id).FirstOrDefault();
+              return errandDetail;
+            });
+        }
   }
 }
