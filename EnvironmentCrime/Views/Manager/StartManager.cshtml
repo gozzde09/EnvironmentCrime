@@ -17,6 +17,7 @@
 	<tr>
 		<td>
 			<select name="status">
+				<option selected="selected">Välj alla</option>
 				@foreach (var errandStatus in Model.ErrandStatuses)
 				{
 					<option value="@errandStatus.StatusId">@errandStatus.StatusName</option>
@@ -38,7 +39,7 @@
 	</tr>
 </table>
 
-<!--Nedan ser man en lista på ärenden-->
+<!--Errand list-->
 <table>
 	<tr>
 		<th>Ärende anmält</th>

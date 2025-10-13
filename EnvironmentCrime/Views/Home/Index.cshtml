@@ -1,4 +1,10 @@
-﻿<section id="mainColumn">
+﻿@{
+    Layout = "_CitizenLayout";
+}
+
+@model Errand
+
+<section id="mainColumn">
     <h2>Välkommen att fylla i din anmälan av miljöbrott</h2>
     <p class="info">I Småstad är inga brott för små för att anmälas</p>
 
@@ -6,30 +12,37 @@
 
     <form method="post" asp-controller="Citizen" asp-action="Validate">
         <p>
+            <input type="hidden" name="isSubmitted" value="true">
         </p>
         <p>
-            <span class="label">Var har brottet skett någonstans?</span><br>
-            <input type="text" name="place"> *
+            <label class="label" asp-for="Place"></label><br />
+            <input asp-for="Place" /> *
+            <span asp-validation-for="Place"></span>
         </p>
         <p>
-            <span class="label">Vilken typ av brott?</span><br>
-            <input type="text" name="crime"> *
+            <label class="label" asp-for="TypeOfCrime"></label><br />
+            <input asp-for="TypeOfCrime" /> *
+            <span asp-validation-for="TypeOfCrime"></span>
         </p>
         <p>
-            <span class="label">När skedde brottet?</span><br>
-            <input type="text" name="crimeDate"> *
+            <label class="label" asp-for="DateOfObservation" ></label><br />
+            <input asp-for="DateOfObservation" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" /> *
+            <span asp-validation-for="DateOfObservation"></span>
         </p>
         <p>
-            <span class="label">Ditt namn (för- och efternamn):</span><br>
-            <input type="text" name="informersName"> *
+            <label class="label" asp-for="InformerName"></label><br />
+            <input asp-for="InformerName" /> *
+            <span asp-validation-for="InformerName"></span>
+        </p>
+
+        <p>
+            <label class="label" asp-for="InformerPhone"></label><br />
+            <input asp-for="InformerPhone" /> *
+            <span asp-validation-for="InformerPhone"></span>
         </p>
         <p>
-            <span class="label">Din telefon:</span><br>
-            <input type="text" name="phone"> *
-        </p>
-        <p>
-            <span class="label">Beskriv din observation<br> (ex. namn på misstänkt person):</span><br>
-            <textarea name="observation" rows="5" cols="16"></textarea>
+            <label class="label" asp-for="Observation"></label><br />
+            <textarea asp-for="Observation" rows="5" cols="16"></textarea>
         </p>
         <p>
             <input class="button" type="submit" value="Skicka in">

@@ -105,14 +105,14 @@
             new ErrandStatus { StatusId= "S_D", StatusName = "Färdig" }
         }.AsQueryable();
 
-
-     public Task<Errand?> GetErrandDetails(string id)
-        {
-            return Task.Run(() =>
-            {
-                var errandDetail = Errands.Where(er => er.ErrandId == id).FirstOrDefault();
-              return errandDetail;
-            });
-        }
+    // Simulate asynchronous retrieval of errand details by ID
+    public Task<Errand?> GetErrandDetails(string id)
+    {
+      return Task.Run(() =>
+      {
+        var errandDetail = Errands.Where(er => er.ErrandId == id).FirstOrDefault();
+        return errandDetail;
+      });
+    }
   }
 }

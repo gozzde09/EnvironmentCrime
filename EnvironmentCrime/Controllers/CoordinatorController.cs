@@ -6,15 +6,18 @@ namespace EnvironmentCrime.Controllers
 {
   public class CoordinatorController : Controller
   {
+    // Dependency Injection to get the repository
     private readonly IEnvironmentCrimeRepository repository;
+
     public CoordinatorController(IEnvironmentCrimeRepository repo)
     {
      repository = repo;
     }
+
     public ViewResult CrimeCoordinator(string id)
     {
-      ViewBag.ID = id;
-      return View(repository);
+      ViewBag.ID = id; // Pass the id to the view using ViewBag
+      return View(repository); // Pass the repository to the view
     }
     public ViewResult ReportCrime()
     {
@@ -28,9 +31,10 @@ namespace EnvironmentCrime.Controllers
     {
       return View();
     }
-    public ViewResult Validate()
+    public ViewResult Validate(Errand errand)
     {
-      return View();
+      // TODO? HttpContext.Session 
+      return View(errand);
     }
 
   }
