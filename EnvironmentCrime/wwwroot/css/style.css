@@ -27,11 +27,18 @@ a {
     color: #f7941d;
 }
 
-    a:hover, a:focus, a:active {
-        color: #8c3a14;
-        text-decoration: none;
-    }
-
+a:hover, a:focus, a:active {
+    color: #8c3a14;
+    text-decoration: none;
+}
+#logo-link {
+    color: #309c3f;
+    text-decoration: none;
+}
+#logo-link:hover {
+    color: #309c3f;
+    text-decoration: none;
+}
 /* Form inputs
  *********************************************/
 input, textarea, select {
@@ -54,9 +61,9 @@ input, textarea, select {
         background: #888;
     }
 
-    .field-validation-error {
+.field-validation-error {
     color: #dc3545;
-    }
+}
 
 /* Tables
  *********************************************/

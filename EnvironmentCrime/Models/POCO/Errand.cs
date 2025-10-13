@@ -24,7 +24,7 @@ namespace EnvironmentCrime.Models
     public string? InformerName { get; set; }
 
     [Display(Name = "Din telefon:")]
-    [RegularExpression(@"^[0]{1}[0-9]{1,3}[0-9]{5,9}$", ErrorMessage = "Formatet är 0XXXXXXXXX")]
+    [RegularExpression(@"^0\d{9}$", ErrorMessage = "Formatet måste vara 0XXXXXXXXX.")]
     [Required(ErrorMessage = "Du måste fylla i ditt telefonnummer.")]
     public string? InformerPhone { get; set; }
 
