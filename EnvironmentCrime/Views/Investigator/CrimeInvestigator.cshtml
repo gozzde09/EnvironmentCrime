@@ -1,6 +1,7 @@
 ﻿@{
 	Layout = "_InvestigatorLayout";
 }
+@model IEnumerable<ErrandStatus>
 
 <h2>Detaljer för ärendet</h2>
 <p class="info">Du är inloggad som handläggare</p>
@@ -10,7 +11,6 @@
 
 <section id="bottomColumn">
 	<h3>Redigera ärende</h3>
-
 	<p class="label">Ytterligare information:</p>
 	<textarea name="information" rows="5" cols="60"></textarea>
 
@@ -26,9 +26,9 @@
 	<p class="label">Ändring av status:</p>
 	<select name="status">
 		<option selected="selected">Välj alla</option>
-		@foreach (var errandStatuses in Model.ErrandStatuses)
+		@foreach (var errandStatus in Model)
 		{
-			<option value="@errandStatuses.StatusId">@errandStatuses.StatusName</option>
+			<option value="@errandStatus.StatusId">@errandStatus.StatusName</option>
 		}
 	</select>
 

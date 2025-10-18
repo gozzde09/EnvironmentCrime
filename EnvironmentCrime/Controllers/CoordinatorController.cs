@@ -17,7 +17,7 @@ namespace EnvironmentCrime.Controllers
     public ViewResult CrimeCoordinator(string id)
     {
       ViewBag.ID = id; // Pass the id to the view using ViewBag
-      return View(repository); // Pass the repository to the view
+      return View(repository.Departments); // Pass the department repository to the view
     }
     public ViewResult ReportCrime()
     {

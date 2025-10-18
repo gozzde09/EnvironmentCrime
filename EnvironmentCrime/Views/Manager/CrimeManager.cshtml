@@ -1,6 +1,7 @@
 ﻿@{
     Layout = "_ManagerLayout";
 }
+@model IEnumerable<Employee>
 
 <h2>Detaljer för ärendet</h2>
 <p class="info">Du är inloggad som avdelningschef</p>
@@ -14,7 +15,7 @@
         Ange handläggare:
         <select name="investigator">
             <option selected="selected">Välj alla</option>
-            @foreach (var investigator in Model.Employees)
+            @foreach (var investigator in Model)
             {
                 <option value="@investigator.EmployeeId">@investigator.EmployeeName</option>
             }
