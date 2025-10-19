@@ -1,6 +1,7 @@
 ﻿using EnvironmentCrime.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using EnvironmentCrime.Infrastructure;
 
 namespace EnvironmentCrime.Controllers
 {
@@ -11,7 +12,7 @@ namespace EnvironmentCrime.Controllers
 
     public CoordinatorController(IEnvironmentCrimeRepository repo)
     {
-     repository = repo;
+      repository = repo;
     }
 
     public ViewResult CrimeCoordinator(string id)
@@ -21,7 +22,15 @@ namespace EnvironmentCrime.Controllers
     }
     public ViewResult ReportCrime()
     {
-      return View();
+      var GetErrandSession = HttpContext.Session.Get<Errand>("NewErrand");
+      if (GetErrandSession == null)
+      { 
+        return View(); 
+      }
+      else
+      { 
+        return View(GetErrandSession); 
+      }
     }
     public ViewResult StartCoordinator()
     {
@@ -29,11 +38,13 @@ namespace EnvironmentCrime.Controllers
     }
     public ViewResult Thanks()
     {
+      HttpContext.Session.Remove("NewErrand");
       return View();
     }
+    [HttpPost]
     public ViewResult Validate(Errand errand)
     {
-      // TODO? HttpContext.Session 
+      HttpContext.Session.Set("NewErrand", errand);
       return View(errand);
     }
 

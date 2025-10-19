@@ -1,4 +1,5 @@
-﻿using EnvironmentCrime.Models;
+﻿using EnvironmentCrime.Infrastructure;
+using EnvironmentCrime.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnvironmentCrime.Controllers
@@ -15,12 +16,17 @@ namespace EnvironmentCrime.Controllers
     public ViewResult Faq() => View();
     public ViewResult Services() => View();
 
+    public ViewResult Thanks()
+    {
+      HttpContext.Session.Remove("NewErrand");
+      return View();
+    }
+
     [HttpPost]
     public ViewResult Validate(Errand errand)
     {
+      HttpContext.Session.Set("NewErrand", errand);
       return View(errand);
     }
-    public ViewResult Thanks() => View();
-
   }
 }
