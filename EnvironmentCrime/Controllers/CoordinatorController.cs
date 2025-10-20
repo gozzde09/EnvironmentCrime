@@ -41,6 +41,7 @@ namespace EnvironmentCrime.Controllers
       HttpContext.Session.Remove("NewErrand");
       return View();
     }
+
     [HttpPost]
     public ViewResult Validate(Errand errand)
     {

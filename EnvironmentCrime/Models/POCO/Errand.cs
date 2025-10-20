@@ -4,7 +4,8 @@ namespace EnvironmentCrime.Models
 {
   public class Errand
   {
-    public string? ErrandId { get; set; }
+    public int ErrandId { get; set; }
+    public string? RefNumber { get; set; }
 
     [Display(Name = "Var har brottet skett någonstans?")]
     [Required(ErrorMessage = "Du måste fylla i plats.")]
