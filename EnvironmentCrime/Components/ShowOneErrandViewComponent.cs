@@ -11,7 +11,7 @@ namespace EnvironmentCrime.Components
       repository = repo;
     }
     // The InvokeAsync method is called when the view component is invoked in a Razor view.
-    public async Task<IViewComponentResult> InvokeAsync(string id)
+    public async Task<IViewComponentResult> InvokeAsync(int id)
     {
       var ErrandDetails = await repository.GetErrandDetails(id);
       return View(ErrandDetails);
