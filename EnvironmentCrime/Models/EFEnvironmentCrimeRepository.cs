@@ -1,7 +1,4 @@
-﻿using EnvironmentCrime.Models.POCO;
-using Microsoft.EntityFrameworkCore;
-
-namespace EnvironmentCrime.Models
+﻿namespace EnvironmentCrime.Models
 {
   public class EFEnvironmentCrimeRepository : IEnvironmentCrimeRepository
   {
@@ -12,6 +9,7 @@ namespace EnvironmentCrime.Models
     {
       context = ctx;
     }
+    // IQueryable properties to access each entity set
     public IQueryable<Department> Departments => context.Departments;
 
     public IQueryable<Employee> Employees => context.Employees;
@@ -33,11 +31,10 @@ namespace EnvironmentCrime.Models
         if (newErrand.ErrandId == 0)
         {
           var sequence = Sequences.FirstOrDefault(s => s.Id == 1);
-          newErrand.RefNumber = "2022-45-" + sequence.CurrentValue;
+          newErrand.RefNumber = DateTime.Now.Year + "-45-" + sequence.CurrentValue;
           newErrand.StatusId = "S_A";
           sequence.CurrentValue++;
-          context.Errands.Add(newErrand);
-          
+          context.Errands.Add(newErrand);       
         }
         context.SaveChanges();
       }

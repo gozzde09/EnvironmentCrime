@@ -1,4 +1,4 @@
-﻿using EnvironmentCrime.Models.POCO;
+﻿using EnvironmentCrime.Models;
 
 namespace EnvironmentCrime.Models
 {

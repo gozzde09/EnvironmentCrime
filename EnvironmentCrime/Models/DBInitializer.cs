@@ -9,11 +9,11 @@
       {
         context.Departments.AddRange(
         new Department { DepartmentId = "D00", DepartmentName = "Småstads kommun" },
-                new Department { DepartmentId = "D01", DepartmentName = "Tekniska Avloppshanteringen" },
-                new Department { DepartmentId = "D02", DepartmentName = "Klimat och Energi" },
-                new Department { DepartmentId = "D03", DepartmentName = "Miljö och Hälsoskydd" },
-                new Department { DepartmentId = "D04", DepartmentName = "Natur och Skogsvård" },
-                new Department { DepartmentId = "D05", DepartmentName = "Renhållning och Avfall" }
+        new Department { DepartmentId = "D01", DepartmentName = "Tekniska Avloppshanteringen" },
+        new Department { DepartmentId = "D02", DepartmentName = "Klimat och Energi" },
+        new Department { DepartmentId = "D03", DepartmentName = "Miljö och Hälsoskydd" },
+        new Department { DepartmentId = "D04", DepartmentName = "Natur och Skogsvård" },
+        new Department { DepartmentId = "D05", DepartmentName = "Renhållning och Avfall" }
         );
         context.SaveChanges();
       }
@@ -191,7 +191,7 @@
         );
         context.SaveChanges();
       }
-      //Kontrollerar om tabellen Errands har något innehåll
+     
       if (!context.Errands.Any())
       {
         context.Errands.AddRange(

@@ -1,12 +1,14 @@
-﻿using EnvironmentCrime.Models.POCO;
+﻿using EnvironmentCrime.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EnvironmentCrime.Models
 {
   public class ApplicationDbContext :DbContext
   {
+    // Constructor
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
+    // DbSets for each entity
     public DbSet<Department> Departments { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<Errand> Errands { get; set; }

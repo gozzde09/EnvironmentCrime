@@ -40,10 +40,12 @@ namespace EnvironmentCrime.Controllers
     {
       // Retrieve the "NewErrand" object from the session
       var newErrand = HttpContext.Session.Get<Errand>("NewErrand");
+
       // Save the new errand to the repository
       repository.SaveErrand(newErrand);
       // Set the reference number in the ViewBag object
       ViewBag.RefNumber = newErrand.RefNumber;
+
       // Remove the "NewErrand" object from the session
       HttpContext.Session.Remove("NewErrand");
       return View();
