@@ -1,29 +1,37 @@
 ﻿@{
     Layout = "_ManagerLayout";
 }
-@model IEnumerable<Employee>
+@model Employee
 
 <h2>Detaljer för ärendet</h2>
 <p class="info">Du är inloggad som avdelningschef</p>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
 
 <!--  Render the ShowOneErrand component and pass the ID from ViewBag -->
 @await Component.InvokeAsync("ShowOneErrand", ViewBag.ID)
 
 <section id="bottomColumn">
-    <h3>Redigera ärende</h3>
-    <p>
-        Ange handläggare:
-        <select name="investigator">
-            <option selected="selected">Välj alla</option>
-            @foreach (var investigator in Model)
-            {
-                <option value="@investigator.EmployeeId">@investigator.EmployeeName</option>
-            }
-        </select>
-    </p>
-    <p>
-        <input type="checkbox" name="noAction" value="true"> Ingen åtgärd:
-        <input type="text" name="reason" placeholder="Ange motivering">
-    </p>
-    <p><input class="button" type="submit" value="Spara"></p>
+    <form asp-controller="Manager" asp-action="SaveEmployeeOrStatus" method="post">
+        <h3>Redigera ärende</h3>
+        <input type="hidden" name="errandId" value="@ViewBag.ID" />
+        <p>
+            Ange handläggare:
+            <select asp-for="EmployeeId" asp-items="@(new SelectList(ViewBag.ListOfEmployees, "EmployeeId", "EmployeeName"))">
+                <option>Välj</option>
+            </select>
+        </p>
+        <p>
+            <input type="checkbox" name="noAction" value="true"> Ingen åtgärd:
+            <input type="text" name="reason" placeholder="Ange motivering">
+        </p>
+        <p><input class="button" type="submit" value="Spara"></p>
+    </form>
 </section>

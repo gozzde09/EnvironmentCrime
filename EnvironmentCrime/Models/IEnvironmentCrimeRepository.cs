@@ -19,7 +19,10 @@ namespace EnvironmentCrime.Models
     // Get details of a specific errand by its ID
     Task<Errand?> GetErrandDetails(int id);
 
-    // Update department - coordinator
+    // Update department - by coordinator
     void UpdateDepartment(int errandId, string choosenDepartment);
+
+    // Update employee - by manager
+    void UpdateEmployee(int errandId, Employee employee);
   }
 }

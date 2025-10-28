@@ -39,7 +39,7 @@ namespace EnvironmentCrime.Controllers
         ViewBag.RefNumber = "Fel med sessionen, registrera ärendet igen!";
       }
       else
-      { 
+      {
         // Save the new errand to the repository
         repository.SaveErrand(newErrand);
         // Set the reference number in the ViewBag object
@@ -61,16 +61,16 @@ namespace EnvironmentCrime.Controllers
     [HttpPost]
     public IActionResult SaveDepartment(int errandId, string choosenDepartment)
     {
-      if (choosenDepartment != "Välj")
+      if (choosenDepartment == "Välj")
+      {
+        // Add a return value for the case when choosenDepartment == "Välj"
+        TempData["Error"] = "Vänligen välj en ny avdelning från menyn.";
+      }
+      else
       {
         repository.UpdateDepartment(errandId, choosenDepartment);
         TempData["Message"] = "Avdelningen har uppdaterats framgångsrikt!";
-        return RedirectToAction("CrimeCoordinator", new { id = errandId });
       }
-     
-      // Add a return value for the case when choosenDepartment == "Välj"
-      TempData["Error"] = "Vänligen välj en ny avdelning från menyn.";
-
       // Redirect back to the CrimeCoordinator view with the errandId
       return RedirectToAction("CrimeCoordinator", new { id = errandId });
     }

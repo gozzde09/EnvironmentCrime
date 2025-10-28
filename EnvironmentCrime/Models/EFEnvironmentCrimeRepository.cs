@@ -64,6 +64,16 @@
       }
       context.SaveChanges();
     }
+     public void UpdateEmployee(int errandId, Employee employee)
+    {
+      var errand = Errands.FirstOrDefault(er => er.ErrandId == errandId);
+
+      if (errand != null)
+      {
+        errand.EmployeeId = employee.EmployeeId;
+      }
+      context.SaveChanges();
+    }
   }
 }
 

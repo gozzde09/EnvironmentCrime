@@ -25,7 +25,7 @@
 
 	<p class="label">Ändring av status:</p>
 	<select name="status">
-		<option selected="selected">Välj alla</option>
+		<option selected="selected">Välj</option>
 		@foreach (var errandStatus in Model)
 		{
 			<option value="@errandStatus.StatusId">@errandStatus.StatusName</option>
