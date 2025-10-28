@@ -6,20 +6,49 @@
 <h2>Detaljer för ärendet</h2>
 <p class="info">Du är inloggad som samordnare</p>
 
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
 <!--  Render the ShowOneErrand component and pass the ID from ViewBag -->
 @await Component.InvokeAsync("ShowOneErrand", ViewBag.ID)
 
 <section id="bottomColumn">
-    <h3>Redigera ärende</h3>
-    <p>
-        Ange enhet:
-        <select name="department">
-            <option selected="selected">Välj alla</option>
-            @foreach (var department in Model)
-            {
-                <option value="@department.DepartmentId">@department.DepartmentName</option>
-            }
-        </select>
-    </p>
-    <p><input class="button" type="submit" value="Spara"></p>
+    <form asp-controller="Coordinator" asp-action="SaveDepartment" method="post">
+        <h3>Redigera ärende</h3>
+        <input type="hidden" name="errandId" value="@ViewBag.ID" />
+        <p>
+            Ange enhet:
+            <select name="choosenDepartment">
+                <option selected="selected">Välj</option>
+                @foreach (var department in Model)
+                {  @if (department.DepartmentName != "Småstads kommun")
+                    {
+                        <option value="@department.DepartmentId">@department.DepartmentName</option>
+                    }
+                }
+            </select>
+        </p>
+        <p><input class="button" type="submit" value="Spara"></p>
+    </form>
 </section>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const alertBoxes = document.getElementsByClassName("alert");
+        if (alertBoxes.length > 0) {
+            // Loopa igenom alla alert-boxar
+            Array.from(alertBoxes).forEach(alertBox => {
+                setTimeout(() => {
+                    alertBox.classList.add("fade-out");
+                    setTimeout(() => alertBox.remove(), 1000);
+                }, 2000);
+            });
+        }
+    });
+</script>

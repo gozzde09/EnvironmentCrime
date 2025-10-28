@@ -22,15 +22,9 @@ namespace EnvironmentCrime.Controllers
     }
     public ViewResult ReportCrime()
     {
-      var GetErrandSession = HttpContext.Session.Get<Errand>("NewErrand");
-      if (GetErrandSession == null)
-      { 
-        return View(); 
-      }
-      else
-      { 
-        return View(GetErrandSession); 
-      }
+      var GetErrandSession = HttpContext.Session.Get<Errand>("NewErrandCoord");
+
+      return GetErrandSession == null ? View() : View(GetErrandSession);
     }
     public ViewResult StartCoordinator()
     {
@@ -38,25 +32,47 @@ namespace EnvironmentCrime.Controllers
     }
     public ViewResult Thanks()
     {
-      // Retrieve the "NewErrand" object from the session
-      var newErrand = HttpContext.Session.Get<Errand>("NewErrand");
+      // Retrieve the "NewErrandCoord" object from the session
+      var newErrand = HttpContext.Session.Get<Errand>("NewErrandCoord");
+      if (newErrand is null)
+      {
+        ViewBag.RefNumber = "Fel med sessionen, registrera ärendet igen!";
+      }
+      else
+      { 
+        // Save the new errand to the repository
+        repository.SaveErrand(newErrand);
+        // Set the reference number in the ViewBag object
+        ViewBag.RefNumber = newErrand.RefNumber;
+      }
 
-      // Save the new errand to the repository
-      repository.SaveErrand(newErrand);
-      // Set the reference number in the ViewBag object
-      ViewBag.RefNumber = newErrand.RefNumber;
-
-      // Remove the "NewErrand" object from the session
-      HttpContext.Session.Remove("NewErrand");
+      // Remove the "NewErrandCoord" object from the session
+      HttpContext.Session.Remove("NewErrandCoord");
       return View();
     }
 
     [HttpPost]
     public ViewResult Validate(Errand errand)
     {
-      HttpContext.Session.Set("NewErrand", errand);
+      HttpContext.Session.Set("NewErrandCoord", errand);
       return View(errand);
     }
 
+    [HttpPost]
+    public IActionResult SaveDepartment(int errandId, string choosenDepartment)
+    {
+      if (choosenDepartment != "Välj")
+      {
+        repository.UpdateDepartment(errandId, choosenDepartment);
+        TempData["Message"] = "Avdelningen har uppdaterats framgångsrikt!";
+        return RedirectToAction("CrimeCoordinator", new { id = errandId });
+      }
+     
+      // Add a return value for the case when choosenDepartment == "Välj"
+      TempData["Error"] = "Vänligen välj en ny avdelning från menyn.";
+
+      // Redirect back to the CrimeCoordinator view with the errandId
+      return RedirectToAction("CrimeCoordinator", new { id = errandId });
+    }
   }
 }

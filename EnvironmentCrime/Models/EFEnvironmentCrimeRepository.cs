@@ -31,10 +31,13 @@
         if (newErrand.ErrandId == 0)
         {
           var sequence = Sequences.FirstOrDefault(s => s.Id == 1);
-          newErrand.RefNumber = DateTime.Now.Year + "-45-" + sequence.CurrentValue;
-          newErrand.StatusId = "S_A";
-          sequence.CurrentValue++;
-          context.Errands.Add(newErrand);       
+          if (sequence != null)
+          {
+            newErrand.RefNumber = DateTime.Now.Year + "-45-" + sequence.CurrentValue;
+            newErrand.StatusId = "S_A";
+            sequence.CurrentValue++;
+            context.Errands.Add(newErrand);
+          }
         }
         context.SaveChanges();
       }
@@ -50,6 +53,17 @@
       });
     }
 
+    // Method to update the department of an errand
+    public void UpdateDepartment(int errandId, string choosenDepartment)
+    {
+      var errand = Errands.FirstOrDefault(er => er.ErrandId == errandId);
+
+      if (errand != null)
+      {
+        errand.DepartmentId = choosenDepartment;
+      }
+      context.SaveChanges();
+    }
   }
 }
 

@@ -19,5 +19,7 @@ namespace EnvironmentCrime.Models
     // Get details of a specific errand by its ID
     Task<Errand?> GetErrandDetails(int id);
 
+    // Update department - coordinator
+    void UpdateDepartment(int errandId, string choosenDepartment);
   }
 }

@@ -36,5 +36,7 @@ namespace EnvironmentCrime.Models
     public string? StatusId { get; set; }
     public string? DepartmentId { get; set; }
     public string? EmployeeId { get; set; }
+    public ICollection<Sample>? Samples { get; set; }
+    public ICollection<Picture>? Pictures { get; set; }
   }
 }

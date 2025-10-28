@@ -23,6 +23,7 @@ namespace EnvironmentCrime.Controllers
 
       // Save the new errand to the repository
       repository.SaveErrand(newErrand);
+      
       // Set the reference number in the ViewBag object
       ViewBag.RefNumber = newErrand.RefNumber;
 
