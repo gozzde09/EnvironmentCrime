@@ -25,18 +25,25 @@ namespace EnvironmentCrime.Controllers
     public IActionResult SaveEmployeeOrStatus(int errandId, Employee employee)
     {
 
-      if (employee.EmployeeId == "Välj")
+      if (employee.EmployeeId == null)
       {
-        // Add a return value for the case when employee.EmployeeName == "Välj"
-        TempData["Error"] = "Vänligen välj en handläggare från menyn."; 
+        // Store an error message in TempData to display after the redirect
+        TempData["Error"] = "Ingen handläggare har valts. Vänligen välj en handläggare i listan.";
+
+        // Redirect back to the CrimeManager view with the current errandId
+        return RedirectToAction("CrimeManager", new { id = errandId });
       }
       else
       {
+        // Update the employee assigned to the specified errand in the repository
         repository.UpdateEmployee(errandId, employee);
+
+        // Store a success message in TempData to display after the redirect
         TempData["Message"] = "Handläggaren har uppdaterats framgångsrikt!";
+
+        // Redirect the user back to the StartManager view after the successful update
+        return RedirectToAction("StartManager");
       }
-      // Redirect back to the CrimeCoordinator view with the errandId
-      return RedirectToAction("CrimeManager", new { id = errandId });
     }
   }
 }

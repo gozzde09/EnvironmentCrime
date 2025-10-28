@@ -5,10 +5,6 @@
 
 <h2>Detaljer för ärendet</h2>
 <p class="info">Du är inloggad som avdelningschef</p>
-@if (TempData["Message"] != null)
-{
-    <div class="alert alert-success">@TempData["Message"]</div>
-}
 
 @if (TempData["Error"] != null)
 {
@@ -25,7 +21,7 @@
         <p>
             Ange handläggare:
             <select asp-for="EmployeeId" asp-items="@(new SelectList(ViewBag.ListOfEmployees, "EmployeeId", "EmployeeName"))">
-                <option>Välj</option>
+                <option value="">Välj</option>
             </select>
         </p>
         <p>

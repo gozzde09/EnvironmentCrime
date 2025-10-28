@@ -61,18 +61,26 @@ namespace EnvironmentCrime.Controllers
     [HttpPost]
     public IActionResult SaveDepartment(int errandId, string choosenDepartment)
     {
-      if (choosenDepartment == "Välj")
+      if (choosenDepartment == null)
       {
-        // Add a return value for the case when choosenDepartment == "Välj"
-        TempData["Error"] = "Vänligen välj en ny avdelning från menyn.";
+        // Store a error message in TempData to show after the redirect
+        TempData["Error"] = "Ingen avdelning har valts. Vänligen välj en avdelning i listan.";
+
+        // Redirect back to the CrimeCoordinator view with the errandId
+        return RedirectToAction("CrimeCoordinator", new { id = errandId });
       }
       else
       {
+        // Update the department for the given errand  in the repository
         repository.UpdateDepartment(errandId, choosenDepartment);
-        TempData["Message"] = "Avdelningen har uppdaterats framgångsrikt!";
+
+        // Store a success message in TempData to show after the redirect
+        TempData["Message"] = "Avdelningen har uppdaterats framgångsrikt!"; 
+
+        // Redirect the user back to the StartCoordinator view after the update
+        return RedirectToAction("StartCoordinator");
       }
-      // Redirect back to the CrimeCoordinator view with the errandId
-      return RedirectToAction("CrimeCoordinator", new { id = errandId });
+     
     }
   }
 }

@@ -6,6 +6,11 @@
 <h2>Ärenden</h2>
 <p class="info">Du är inloggad som avdelningschef</p>
 
+@if (TempData["Message"] != null)
+{
+	<div class="alert alert-success">@TempData["Message"]</div>
+}
+
 <table id="managerForm">
 	<tr>
 		<td class="label">Välj status:</td>

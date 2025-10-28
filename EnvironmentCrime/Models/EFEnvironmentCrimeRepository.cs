@@ -33,6 +33,7 @@
           var sequence = Sequences.FirstOrDefault(s => s.Id == 1);
           if (sequence != null)
           {
+            // Generate a reference number using the current year and sequence value
             newErrand.RefNumber = DateTime.Now.Year + "-45-" + sequence.CurrentValue;
             newErrand.StatusId = "S_A";
             sequence.CurrentValue++;
@@ -48,6 +49,7 @@
     {
       return Task.Run(() =>
       {
+        // Query the Errands DbSet to find the errand with the specified ID
         var errandDetail = Errands.Where(er => er.ErrandId == id).FirstOrDefault();
         return errandDetail;
       });
@@ -56,20 +58,25 @@
     // Method to update the department of an errand
     public void UpdateDepartment(int errandId, string choosenDepartment)
     {
+      // Find the errand by its ID
       var errand = Errands.FirstOrDefault(er => er.ErrandId == errandId);
 
       if (errand != null)
       {
+        // Update the DepartmentId of the errand
         errand.DepartmentId = choosenDepartment;
       }
       context.SaveChanges();
     }
-     public void UpdateEmployee(int errandId, Employee employee)
+    // Method to update the employee of an errand
+    public void UpdateEmployee(int errandId, Employee employee)
     {
+      // Find the errand by its ID
       var errand = Errands.FirstOrDefault(er => er.ErrandId == errandId);
 
       if (errand != null)
       {
+        // Update the EmployeeId of the errand
         errand.EmployeeId = employee.EmployeeId;
       }
       context.SaveChanges();

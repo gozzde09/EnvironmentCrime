@@ -20,3 +20,16 @@
 </body>
 
 </html>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const alertBoxes = document.getElementsByClassName("alert");
+        if (alertBoxes.length > 0) {
+            Array.from(alertBoxes).forEach(alertBox => {
+                setTimeout(() => {
+                    alertBox.classList.add("fade-out");
+                    setTimeout(() => alertBox.remove(), 1000);
+                }, 100000);
+            });
+        }
+    });
+</script>
