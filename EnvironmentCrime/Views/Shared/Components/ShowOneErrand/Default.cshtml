@@ -34,18 +34,54 @@
     <p>
         <span class="label">Handläggare: </span><br />@Model.EmployeeId
     </p>
+    <p style="white-space: pre-line;">
+        <span class="label">Ytterligare information: </span>
     <p>
-        <span class="label">Ytterligare information: </span><br />@Model.InvestigatorInfo
+        @Model.InvestigatorInfo
     </p>
-    <p>
-        <span class="label">Händelser: </span><br />@Model.InvestigatorAction
     </p>
-    <p>
-        <span class="label">Provtagning: </span><br>
-        Provtagning.pdf
+    <p style="white-space: pre-line;">
+        <span class="label">Händelser: </span>
+        @Model.InvestigatorAction
     </p>
-    <p>
-        <span class="label">Bilder: </span><br>
-        <img src="~/images/imagetest.jpg" alt="klicka på bilden">
-    </p>
+    @if (Model.Samples != null && Model.Samples.Count > 0)
+    {
+        <div>
+            <span class="label">Provtagning: </span> <br />
+
+            @foreach (var sample in Model.Samples)
+            {
+                <p class="sample">
+                    <a href="~/Samples/@sample.SampleName">@sample.SampleName</a>
+                </p>
+            }
+        </div>
+    }
+    else
+    {
+        <p>
+            <span class="label">Provtagning: </span><br />(Inga prover)
+        </p>
+    }
+
+    @if (Model.Pictures != null && Model.Pictures.Count > 0)
+    {
+        <p>
+            <span class="label">Bilder: </span><br />
+
+            @foreach (var picture in Model.Pictures)
+            {
+                @* <a href="~/Pictures/@picture.PictureName">@picture.PictureName</a>
+                <br /> *@
+                <img src="~/Pictures/@picture.PictureName" alt="errand-picture" height="162" width="162" />
+            }
+            <br />
+        </p>
+    }
+    else
+    {
+        <p>
+            <span class="label">Bilder: </span><br />(Inga bilder)
+        </p>
+    }
 </section>

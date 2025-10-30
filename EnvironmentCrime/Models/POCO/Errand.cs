@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EnvironmentCrime.Models
 {
   public class Errand
   {
     public int ErrandId { get; set; }
-    public string? RefNumber { get; set; }
+    public required string RefNumber { get; set; }
 
     [Display(Name = "Var har brottet skett någonstans?")]
     [Required(ErrorMessage = "Du måste fylla i plats.")]

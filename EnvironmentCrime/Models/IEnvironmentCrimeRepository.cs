@@ -24,5 +24,21 @@ namespace EnvironmentCrime.Models
 
     // Update employee - by manager
     void UpdateEmployee(int errandId, Employee employee);
+
+    // Update investigator info - by manager 
+    void UpdateInvestigatorInfo(int errandId, string investigatorInfo);
+
+    // Add investigator info - by investigator
+    void AddInvestigatorInfo(int errandId, string investigatorInfo);
+
+    // Create investigator event - by investigator
+    void CreateInvestigatorEvent(int errandId, string investigatorAction);
+
+    // Update errand status
+    void UpdateErrandStatus(int errandId, string statusId);
+
+    // Insert file (sample or picture) associated with an errand
+    Task InsertFileAsync(string dirPath, int errandId, string uniqueFileName);
+
   }
 }

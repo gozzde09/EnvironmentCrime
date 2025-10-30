@@ -241,9 +241,18 @@ nav {
     float: right;
 }
 
-    #sideColumn img {
-        max-width: 100%;
-    }
+ #sideColumn img {
+    max-width: 100%;
+   
+}
+#rightColumn img {
+    max-width: 100%;
+    margin-bottom: 2%;
+}
+.sample {
+    margin: 2% 0;
+}
+
 
 /* Left and right column are go side-by-side
  * splitting the width in half.
@@ -264,6 +273,10 @@ nav {
 #bottomColumn {
     float: none;
     clear: both;
+}
+pre {
+    color: #362f2d;
+    font: 100% Arial, sans-serif;
 }
 /*Alerts*/
 .alert {

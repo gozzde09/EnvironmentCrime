@@ -191,7 +191,7 @@
         );
         context.SaveChanges();
       }
-     
+
       if (!context.Errands.Any())
       {
         context.Errands.AddRange(
@@ -202,10 +202,8 @@
                   TypeOfCrime = "Sopor",
                   DateOfObservation = new DateTime(2020, 04, 24),
                   Observation = "Anmälaren var på promeand i skogslunden när hon upptäckte soporna",
-                  InvestigatorInfo =
-                        "Undersökning har gjorts och bland soporna hittades bl.a ett brev till Gösta Olsson",
-                  InvestigatorAction =
-                        "Brev har skickats till Gösta Olsson om soporna och anmälan har gjorts till polisen 2020-05-01",
+                  InvestigatorInfo = "Undersökning har gjorts och bland soporna hittades bl.a ett brev till Gösta Olsson",
+                  InvestigatorAction = "Brev har skickats till Gösta Olsson om soporna och anmälan har gjorts till polisen 2020-05-01",
                   InformerName = "Ada Bengtsson",
                   InformerPhone = "0432-5545522",
                   StatusId = "S_D",

@@ -1,4 +1,6 @@
-﻿namespace EnvironmentCrime.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace EnvironmentCrime.Models
 {
   public class EFEnvironmentCrimeRepository : IEnvironmentCrimeRepository
   {
@@ -14,7 +16,7 @@
 
     public IQueryable<Employee> Employees => context.Employees;
 
-    public IQueryable<Errand> Errands => context.Errands;
+    public IQueryable<Errand> Errands => context.Errands.Include(e => e.Samples).Include(e => e.Pictures);
 
     public IQueryable<ErrandStatus> ErrandStatuses => context.ErrandStatuses;
 
@@ -47,24 +49,19 @@
     // Method to get errand details by ID
     public Task<Errand?> GetErrandDetails(int id)
     {
-      return Task.Run(() =>
-      {
-        // Query the Errands DbSet to find the errand with the specified ID
-        var errandDetail = Errands.Where(er => er.ErrandId == id).FirstOrDefault();
-        return errandDetail;
-      });
+      return Task.Run(() => Errands.FirstOrDefault(e => e.ErrandId == id));
     }
 
     // Method to update the department of an errand
     public void UpdateDepartment(int errandId, string choosenDepartment)
     {
       // Find the errand by its ID
-      var errand = Errands.FirstOrDefault(er => er.ErrandId == errandId);
+      var errandDb = Errands.FirstOrDefault(er => er.ErrandId == errandId);
 
-      if (errand != null)
+      if (errandDb != null)
       {
         // Update the DepartmentId of the errand
-        errand.DepartmentId = choosenDepartment;
+        errandDb.DepartmentId = choosenDepartment;
       }
       context.SaveChanges();
     }
@@ -72,14 +69,87 @@
     public void UpdateEmployee(int errandId, Employee employee)
     {
       // Find the errand by its ID
-      var errand = Errands.FirstOrDefault(er => er.ErrandId == errandId);
+      var errandDb = Errands.FirstOrDefault(er => er.ErrandId == errandId);
 
-      if (errand != null)
+      if (errandDb != null)
       {
         // Update the EmployeeId of the errand
-        errand.EmployeeId = employee.EmployeeId;
+        errandDb.EmployeeId = employee.EmployeeId;
+        errandDb.StatusId = "S_A";
       }
       context.SaveChanges();
+    }
+
+    // Method to update investigator info of an errand - by manager
+    public void UpdateInvestigatorInfo(int errandId, string investigatorInfo)
+    {
+      var errandDb = Errands.FirstOrDefault(er => er.ErrandId == errandId);
+      if (errandDb != null)
+      {
+        // Update the InvestigatorInfo of the errand
+        errandDb.InvestigatorInfo = errandDb.InvestigatorInfo + "\n" + investigatorInfo;
+        errandDb.StatusId = "S_B";
+        errandDb.EmployeeId = "";
+      }
+      context.SaveChanges();
+    }
+    // Method to add investigator info for an errand - by investigator
+    public void AddInvestigatorInfo(int errandId, string investigatorInfo)
+    {
+      var errandDb = Errands.FirstOrDefault(er => er.ErrandId == errandId);
+      if (errandDb != null)
+      {
+        // Set the InvestigatorInfo of the errandDb
+        errandDb.InvestigatorInfo = errandDb.InvestigatorInfo + "\n" + investigatorInfo;
+      }
+      context.SaveChanges();
+    }
+
+    // Metod to change status for an errand - by investigator
+    public void UpdateErrandStatus(int errandId, string statusId)
+    {
+      var errandDb = Errands.FirstOrDefault(er => er.ErrandId == errandId);
+      if (errandDb != null)
+      {
+        // Update the StatusId of the errand
+        errandDb.StatusId = statusId;
+      }
+      context.SaveChanges();
+    }
+
+    // Method to create an investigator event for an errand - by investigator
+    public void CreateInvestigatorEvent(int errandId, string investigatorAction)
+    {
+      var errandDb = Errands.FirstOrDefault(er => er.ErrandId == errandId);
+      if (errandDb != null)
+      {
+        // Update the InvestigatorAction of the errand
+        errandDb.InvestigatorAction = errandDb.InvestigatorAction + "\n" + investigatorAction;
+      }
+      context.SaveChanges();
+    }
+    // Method to insert a file (sample or picture) associated with an errand - by investigator
+    public async Task InsertFileAsync(string dirPath, int errandId, string uniqueFileName)
+    {
+      if (dirPath == "Samples")
+      {
+        var sample = new Sample
+        {
+          ErrandId = errandId,
+          SampleName = uniqueFileName
+        };
+        await context.Samples.AddAsync(sample);
+      }
+      if (dirPath == "Pictures")
+      {
+        var picture = new Picture
+        {
+          ErrandId = errandId,
+          PictureName = uniqueFileName
+        };
+        await context.Pictures.AddAsync(picture);
+      }
+      await context.SaveChangesAsync();
     }
   }
 }

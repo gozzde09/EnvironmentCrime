@@ -93,6 +93,7 @@ namespace EnvironmentCrime.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RefNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StatusId")
@@ -120,7 +121,7 @@ namespace EnvironmentCrime.Migrations
                     b.ToTable("ErrandStatuses");
                 });
 
-            modelBuilder.Entity("EnvironmentCrime.Models.POCO.Picture", b =>
+            modelBuilder.Entity("EnvironmentCrime.Models.Picture", b =>
                 {
                     b.Property<int>("PictureId")
                         .ValueGeneratedOnAdd()
@@ -136,10 +137,12 @@ namespace EnvironmentCrime.Migrations
 
                     b.HasKey("PictureId");
 
+                    b.HasIndex("ErrandId");
+
                     b.ToTable("Pictures");
                 });
 
-            modelBuilder.Entity("EnvironmentCrime.Models.POCO.Sample", b =>
+            modelBuilder.Entity("EnvironmentCrime.Models.Sample", b =>
                 {
                     b.Property<int>("SampleId")
                         .ValueGeneratedOnAdd()
@@ -154,6 +157,8 @@ namespace EnvironmentCrime.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SampleId");
+
+                    b.HasIndex("ErrandId");
 
                     b.ToTable("Samples");
                 });
@@ -172,6 +177,31 @@ namespace EnvironmentCrime.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Sequences");
+                });
+
+            modelBuilder.Entity("EnvironmentCrime.Models.Picture", b =>
+                {
+                    b.HasOne("EnvironmentCrime.Models.Errand", null)
+                        .WithMany("Pictures")
+                        .HasForeignKey("ErrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EnvironmentCrime.Models.Sample", b =>
+                {
+                    b.HasOne("EnvironmentCrime.Models.Errand", null)
+                        .WithMany("Samples")
+                        .HasForeignKey("ErrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EnvironmentCrime.Models.Errand", b =>
+                {
+                    b.Navigation("Pictures");
+
+                    b.Navigation("Samples");
                 });
 #pragma warning restore 612, 618
         }
