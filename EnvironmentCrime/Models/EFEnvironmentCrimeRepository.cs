@@ -53,7 +53,7 @@ namespace EnvironmentCrime.Models
     }
 
     // Method to update the department of an errand
-    public void UpdateDepartment(int errandId, string choosenDepartment)
+    public void UpdateDepartment(int errandId, string choosenDepartmentId)
     {
       // Find the errand by its ID
       var errandDb = Errands.FirstOrDefault(er => er.ErrandId == errandId);
@@ -61,7 +61,7 @@ namespace EnvironmentCrime.Models
       if (errandDb != null)
       {
         // Update the DepartmentId of the errand
-        errandDb.DepartmentId = choosenDepartment;
+        errandDb.DepartmentId = choosenDepartmentId;
       }
       context.SaveChanges();
     }
@@ -118,7 +118,7 @@ namespace EnvironmentCrime.Models
     }
 
     // Method to create an investigator event for an errand - by investigator
-    public void CreateInvestigatorEvent(int errandId, string investigatorAction)
+    public void AddInvestigatorEvent(int errandId, string investigatorAction)
     {
       var errandDb = Errands.FirstOrDefault(er => er.ErrandId == errandId);
       if (errandDb != null)

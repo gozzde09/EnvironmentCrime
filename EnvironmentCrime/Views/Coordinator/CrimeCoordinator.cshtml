@@ -20,7 +20,7 @@
         <input type="hidden" name="errandId" value="@ViewBag.ID" />
         <p>
             Ange enhet:
-            <select name="choosenDepartment">
+            <select name="choosenDepartmentId">
                 <option value="">Välj avdelning</option>
                 @foreach (var department in Model)
                 {  @if (department.DepartmentName != "Småstads kommun")

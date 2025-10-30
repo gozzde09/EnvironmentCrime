@@ -44,7 +44,7 @@ namespace EnvironmentCrime.Controllers
       // Path to save file
       string fullPath = Path.Combine(environment.WebRootPath, dirPath, uniqueFileName);
 
-      // save the uploaded file
+      // Save the uploaded file
       await using var stream = new FileStream(fullPath, FileMode.Create);
       await documents.CopyToAsync(stream);
 
@@ -66,9 +66,11 @@ namespace EnvironmentCrime.Controllers
         return RedirectToAction("CrimeInvestigator", new { id = errandId });
       }
 
-      repository.AddInvestigatorInfo(errandId, investigatorInfo);
+      if (!string.IsNullOrWhiteSpace(investigatorInfo))
+        repository.AddInvestigatorInfo(errandId, investigatorInfo);
 
-      repository.CreateInvestigatorEvent(errandId, investigatorAction);
+      if (!string.IsNullOrWhiteSpace(investigatorAction))
+        repository.AddInvestigatorEvent(errandId, investigatorAction);
 
       if (!string.IsNullOrWhiteSpace(statusId))
       { repository.UpdateErrandStatus(errandId, statusId); }

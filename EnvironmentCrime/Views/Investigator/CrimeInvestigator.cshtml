@@ -36,7 +36,7 @@
 
         <p class="label">Ändring av status:</p>
         <select asp-for="StatusId" asp-items="@(new SelectList(ViewBag.ListOfStatus, "StatusId", "StatusName"))">
-            <option value="">Välj</option>
+            <option value="">Välj status</option>
         </select>
         <p>
             <input class="button" type="submit" value="Spara ändringarna">

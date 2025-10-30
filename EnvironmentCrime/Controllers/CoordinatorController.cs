@@ -59,9 +59,9 @@ namespace EnvironmentCrime.Controllers
     }
 
     [HttpPost]
-    public IActionResult SaveDepartment(int errandId, string choosenDepartment)
+    public IActionResult SaveDepartment(int errandId, string choosenDepartmentId)
     {
-      if (choosenDepartment == null)
+      if (choosenDepartmentId == null)
       {
         // Store a error message in TempData to show after the redirect
         TempData["Error"] = "Ingen avdelning har valts. Vänligen välj en avdelning i listan.";
@@ -72,7 +72,7 @@ namespace EnvironmentCrime.Controllers
       else
       {
         // Update the department for the given errand  in the repository
-        repository.UpdateDepartment(errandId, choosenDepartment);
+        repository.UpdateDepartment(errandId, choosenDepartmentId);
 
         // Store a success message in TempData to show after the redirect
         TempData["Message"] = "Avdelningen har uppdaterats framgångsrikt!"; 

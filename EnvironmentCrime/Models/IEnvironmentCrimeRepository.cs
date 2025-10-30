@@ -31,8 +31,8 @@ namespace EnvironmentCrime.Models
     // Add investigator info - by investigator
     void AddInvestigatorInfo(int errandId, string investigatorInfo);
 
-    // Create investigator event - by investigator
-    void CreateInvestigatorEvent(int errandId, string investigatorAction);
+    // Add investigator event - by investigator
+    void AddInvestigatorEvent(int errandId, string investigatorAction);
 
     // Update errand status
     void UpdateErrandStatus(int errandId, string statusId);
