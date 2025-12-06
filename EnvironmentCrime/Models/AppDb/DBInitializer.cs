@@ -1,15 +1,18 @@
-﻿namespace EnvironmentCrime.Models
+﻿namespace EnvironmentCrime.Models.AppDb
 {
   public class DBInitializer
   {
     public static void EnsurePopulated(IServiceProvider service)
     {
+      // Get the database context from the service provider
       var context = service.GetRequiredService<ApplicationDbContext>();
+
+      // Departments
       if (!context.Departments.Any())
       {
         context.Departments.AddRange(
         new Department { DepartmentId = "D00", DepartmentName = "Småstads kommun" },
-        new Department { DepartmentId = "D01", DepartmentName = "Tekniska Avloppshanteringen" },
+        new Department { DepartmentId = "D01", DepartmentName = "Teknisk Avloppshanteringen" },
         new Department { DepartmentId = "D02", DepartmentName = "Klimat och Energi" },
         new Department { DepartmentId = "D03", DepartmentName = "Miljö och Hälsoskydd" },
         new Department { DepartmentId = "D04", DepartmentName = "Natur och Skogsvård" },
@@ -18,6 +21,7 @@
         context.SaveChanges();
       }
 
+      // ErrandStatuses
       if (!context.ErrandStatuses.Any())
       {
         context.ErrandStatuses.AddRange(
@@ -29,6 +33,7 @@
         context.SaveChanges();
       }
 
+      // Sequences
       if (!context.Sequences.Any())
       {
         context.Sequences.Add(
@@ -37,6 +42,7 @@
         context.SaveChanges();
       }
 
+      // Employees
       if (!context.Employees.Any())
       {
         context.Employees.AddRange(
@@ -100,8 +106,7 @@
         {
           EmployeeId = "E203",
           EmployeeName = "Kurt Mild",
-          RoleTitle
-        = "Investigator",
+          RoleTitle = "Investigator",
           DepartmentId = "D02"
         },
         new Employee
@@ -192,6 +197,7 @@
         context.SaveChanges();
       }
 
+      // Errands
       if (!context.Errands.Any())
       {
         context.Errands.AddRange(

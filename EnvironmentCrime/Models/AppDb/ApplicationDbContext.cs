@@ -1,7 +1,6 @@
-﻿using EnvironmentCrime.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace EnvironmentCrime.Models
+namespace EnvironmentCrime.Models.AppDb
 {
   public class ApplicationDbContext :DbContext
   {
@@ -16,5 +15,7 @@ namespace EnvironmentCrime.Models
     public DbSet<Picture> Pictures { get; set; }
     public DbSet<Sample> Samples { get; set; }
     public DbSet<Sequence> Sequences { get; set; }
+    // DTO/query-objekt
+    public DbSet<Case> Cases { get; set; }
   }
 }

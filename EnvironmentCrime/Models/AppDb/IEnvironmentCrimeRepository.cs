@@ -1,6 +1,4 @@
-﻿using EnvironmentCrime.Models;
-
-namespace EnvironmentCrime.Models
+﻿namespace EnvironmentCrime.Models.AppDb
 {
   public interface IEnvironmentCrimeRepository
   {
@@ -20,7 +18,7 @@ namespace EnvironmentCrime.Models
     Task<Errand?> GetErrandDetails(int id);
 
     // Update department - by coordinator
-    void UpdateDepartment(int errandId, string choosenDepartment);
+    void UpdateDepartment(int errandId, Department department);
 
     // Update employee - by manager
     void UpdateEmployee(int errandId, Employee employee);
@@ -34,11 +32,12 @@ namespace EnvironmentCrime.Models
     // Add investigator event - by investigator
     void AddInvestigatorEvent(int errandId, string investigatorAction);
 
-    // Update errand status
+    // Update errand status - by investigator
     void UpdateErrandStatus(int errandId, string statusId);
 
-    // Insert file (sample or picture) associated with an errand
+    // Insert file (sample or picture) associated with an errand - by investigator
     Task InsertFileAsync(string dirPath, int errandId, string uniqueFileName);
 
+    IQueryable<Case> GetErrands(string role);
   }
 }

@@ -1,17 +1,17 @@
-﻿using EnvironmentCrime.Models;
+﻿using EnvironmentCrime.Models.AppDb;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
-using System;
 
 namespace EnvironmentCrime.Controllers
 {
   public class InvestigatorController : Controller
   {
+    // Dependency Injection to get the repository
     private readonly IEnvironmentCrimeRepository repository;
+
+    // Dependency Injection to get the web host environment
     private readonly IWebHostEnvironment environment;
+
+    // Constructor to inject the repository and environment
     public InvestigatorController(IEnvironmentCrimeRepository repo, IWebHostEnvironment env)
     {
       repository = repo;
@@ -31,10 +31,11 @@ namespace EnvironmentCrime.Controllers
     {
       return View(repository);
     }
+
     // Save pictures and samples
     private async Task SaveFileAsync(int errandId, string dirPath, IFormFile? documents)
     {
-
+      // Check if a file was uploaded
       if (documents == null || documents.Length == 0)
         return;
 
@@ -56,6 +57,7 @@ namespace EnvironmentCrime.Controllers
     [HttpPost]
     public async Task<IActionResult> UpdateErrandAsInvestigator(int errandId, string investigatorInfo, string investigatorAction, string statusId, IFormFile sample, IFormFile picture)
     {
+      // Check if at least one field is filled
       if (string.IsNullOrWhiteSpace(investigatorInfo) &&
           string.IsNullOrWhiteSpace(investigatorAction) &&
           string.IsNullOrWhiteSpace(statusId) &&
@@ -65,7 +67,7 @@ namespace EnvironmentCrime.Controllers
         TempData["Error"] = "Ingen ändring gjordes. Inget fält har fyllts i.";
         return RedirectToAction("CrimeInvestigator", new { id = errandId });
       }
-
+      // Add investigator info, action and status if provided
       if (!string.IsNullOrWhiteSpace(investigatorInfo))
         repository.AddInvestigatorInfo(errandId, investigatorInfo);
 
@@ -75,6 +77,7 @@ namespace EnvironmentCrime.Controllers
       if (!string.IsNullOrWhiteSpace(statusId))
       { repository.UpdateErrandStatus(errandId, statusId); }
 
+      // Save sample and picture if provided
       await SaveFileAsync(errandId, "Samples", sample);
 
       await SaveFileAsync(errandId, "Pictures", picture);

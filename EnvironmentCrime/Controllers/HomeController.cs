@@ -1,6 +1,5 @@
 using EnvironmentCrime.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 using EnvironmentCrime.Infrastructure;
 
 namespace EnvironmentCrime.Controllers
@@ -9,17 +8,12 @@ namespace EnvironmentCrime.Controllers
   {
     public ViewResult Index()
     {
+      // Get the "NewErrand" object from the session
       var GetErrandSession = HttpContext.Session.Get<Errand>("NewErrand");
-      if (GetErrandSession == null)
-      {
-        return View();
-      }
-      else
-      {
-        return View(GetErrandSession);
-      }
+
+      // Return the view with or without the errand object
+      return GetErrandSession == null ? View() : View(GetErrandSession);
     }
     public ViewResult Login() => View();
-
   }
 }

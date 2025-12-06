@@ -1,4 +1,5 @@
-﻿
+﻿@using EnvironmentCrime.Models.AppDb
+
 @{
 	Layout = "_CoordinatorLayout";
 }
@@ -26,7 +27,7 @@
 				<option selected="selected">Välj alla</option>
 				@foreach (var errandStatus in Model.ErrandStatuses)
 				{
-					<option value="@errandStatus.StatusId">@errandStatus.StatusName</option>
+					<option value="@errandStatus.StatusName">@errandStatus.StatusName</option>
 				}
 			</select>
 		</td>
@@ -35,7 +36,7 @@
 				<option selected="selected">Välj alla</option>
 				@foreach (var department in Model.Departments)
 				{
-					<option value="@department.DepartmentId">@department.DepartmentName</option>
+					<option value="@department.DepartmentName">@department.DepartmentName</option>
 				}
 			</select>
 		</td>
@@ -55,17 +56,17 @@
 		<th>Avdelning</th>
 		<th>Handläggare</th>
 	</tr>
-	@foreach (Errand errands in Model.Errands)
+	@foreach (var Errand in Model.GetErrands("coordinator"))
 	{
 		<tr>
-			<td>@errands.DateOfObservation.ToShortDateString()</td>
+			<td>@Errand.DateOfObservation.ToShortDateString()</td>
 			<td>
-				<a asp-controller="Coordinator" asp-action="CrimeCoordinator" asp-route-id="@errands.ErrandId">@errands.RefNumber</a>
+				<a asp-controller="Coordinator" asp-action="CrimeCoordinator" asp-route-id="@Errand.ErrandId">@Errand.RefNumber</a>
 			</td>
-			<td>@errands.TypeOfCrime</td>
-			<td>@errands.StatusId</td>
-			<td>@errands.DepartmentId</td>
-			<td>@errands.EmployeeId</td>
+			<td>@Errand.TypeOfCrime</td>
+			<td>@Errand.StatusName</td>
+			<td>@Errand.DepartmentName</td>
+			<td>@Errand.EmployeeName</td>
 		</tr>
 	}
 </table>

@@ -4,7 +4,7 @@
 @model Errand
 
 <h2>Detaljer för ärendet</h2>
-<p class="info">Du är inloggad som handläggare</p>
+<p class="info">Du är inloggad som handläggare.</p>
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger">@TempData["Error"]</div>
@@ -19,7 +19,7 @@
 
 <section id="bottomColumn">
     <form asp-controller="Investigator" asp-action="UpdateErrandAsInvestigator" method="post" enctype="multipart/form-data">
-        <h3>Redigera ärende</h3>
+        <h3>Redigera ärendet</h3>
         <input type="hidden" name="errandId" value="@ViewBag.ID" />
 
         <p class="label">Ytterligare information:</p>

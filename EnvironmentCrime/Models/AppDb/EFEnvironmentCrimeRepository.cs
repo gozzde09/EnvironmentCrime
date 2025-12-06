@@ -1,15 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Runtime.Intrinsics.Arm;
+using static System.Net.Mime.MediaTypeNames;
 
-namespace EnvironmentCrime.Models
+namespace EnvironmentCrime.Models.AppDb
 {
   public class EFEnvironmentCrimeRepository : IEnvironmentCrimeRepository
   {
+    // Private field to hold the database context
     private ApplicationDbContext context;
+    private IHttpContextAccessor contextAccessor;
 
     // Constructor that accepts the database context via dependency injection
-    public EFEnvironmentCrimeRepository(ApplicationDbContext ctx)
+    public EFEnvironmentCrimeRepository(ApplicationDbContext ctx, IHttpContextAccessor contextAccessor)
     {
       context = ctx;
+      this.contextAccessor = contextAccessor;
     }
     // IQueryable properties to access each entity set
     public IQueryable<Department> Departments => context.Departments;
@@ -52,8 +57,8 @@ namespace EnvironmentCrime.Models
       return Task.Run(() => Errands.FirstOrDefault(e => e.ErrandId == id));
     }
 
-    // Method to update the department of an errand
-    public void UpdateDepartment(int errandId, string choosenDepartmentId)
+    // Method to update the department of an errand - by coordinator
+    public void UpdateDepartment(int errandId, Department department)
     {
       // Find the errand by its ID
       var errandDb = Errands.FirstOrDefault(er => er.ErrandId == errandId);
@@ -61,11 +66,11 @@ namespace EnvironmentCrime.Models
       if (errandDb != null)
       {
         // Update the DepartmentId of the errand
-        errandDb.DepartmentId = choosenDepartmentId;
+        errandDb.DepartmentId = department.DepartmentId;
       }
       context.SaveChanges();
     }
-    // Method to update the employee of an errand
+    // Method to update the employee of an errand - by manager
     public void UpdateEmployee(int errandId, Employee employee)
     {
       // Find the errand by its ID
@@ -151,6 +156,117 @@ namespace EnvironmentCrime.Models
       }
       await context.SaveChangesAsync();
     }
-  }
+    public Employee GetEmployee(String userName)
+    {
+      Employee emp = new Employee();
+      foreach (Employee em in Employees)
+      {
+        if (em.EmployeeId == userName)
+        {
+          emp = em;
+        }
+      }
+      return emp;
+
+    }
+    public IQueryable<Case> GetErrands(string role)
+{
+    var userName = contextAccessor.HttpContext?.User?.Identity?.Name;
+
+    if (string.IsNullOrWhiteSpace(userName))
+        throw new InvalidOperationException("Ingen inloggad användare hittades.");
+
+    // Kullanıcı bilgisi (departman, employeeId vs.)
+    var employee = GetEmployee(userName);
+
+    if (employee == null)
+        throw new InvalidOperationException("Användaren hittades inte i Employees-tabellen.");
+
+    // Temel sorgu
+    var query =
+        from errand in Errands
+        join status in ErrandStatuses on errand.StatusId equals status.StatusId
+
+        join department in Departments on errand.DepartmentId equals department.DepartmentId into deptJoin
+        from dep in deptJoin.DefaultIfEmpty()
+
+        join employeeJoin in Employees on errand.EmployeeId equals employeeJoin.EmployeeId into empJoin
+        from emp in empJoin.DefaultIfEmpty()
+
+        select new
+        {
+            Errand = errand,
+            StatusName = status.StatusName,
+            DepartmentName = dep != null ? dep.DepartmentName : "Ej tillsatt",
+            EmployeeName = emp != null ? emp.EmployeeName : "Ej tillsatt",
+
+            // Filtreleme için gerekli alanlar
+            DepartmentId = dep.DepartmentId,
+            EmployeeId = emp.EmployeeId
+        };
+
+    // Role göre filtreleme
+    switch (role.ToLower())
+    {
+        case "coordinator":
+            // Coordinator → tüm işleri görür
+            break;
+
+        case "manager":
+            // Manager → sadece kendi departmanının işleri
+            query = query.Where(x => x.DepartmentId == employee.DepartmentId);
+            break;
+
+        case "investigator":
+            // Investigator → sadece kendi adına atanmış işler
+            query = query.Where(x => x.EmployeeId == employee.EmployeeId);
+            break;
+
+        default:
+            throw new ArgumentException("Ogiltig roll.");
+    }
+
+    // Son projeksiyon
+    var result =
+        query.OrderByDescending(x => x.Errand.RefNumber)
+             .Select(x => new Case
+             {
+                 ErrandId = x.Errand.ErrandId,
+                 DateOfObservation = x.Errand.DateOfObservation,
+                 RefNumber = x.Errand.RefNumber,
+                 TypeOfCrime = x.Errand.TypeOfCrime,
+                 StatusName = x.StatusName,
+                 DepartmentName = x.DepartmentName,
+                 EmployeeName = x.EmployeeName
+             });
+
+    return result;
 }
 
+
+    //public IQueryable<Case>GetErrands()
+    //{
+    //  var errandList = from errand in Errands
+    //                   join status in ErrandStatuses on errand.StatusId equals status.StatusId
+    //                   join department in Departments on errand.DepartmentId equals department.DepartmentId into departments
+    //                   from dep in departments.DefaultIfEmpty()
+
+    //                   join employee in Employees on errand.EmployeeId equals employee.EmployeeId into employees
+    //                   from emp in employees.DefaultIfEmpty()
+    //                   orderby errand.RefNumber descending
+
+    //                   select new Case
+    //                   {
+    //                     DateOfObservation = errand.DateOfObservation,
+    //                     ErrandId = errand.ErrandId,
+    //                     RefNumber = errand.RefNumber,
+    //                     TypeOfCrime = errand.TypeOfCrime,
+    //                     StatusName = status.StatusName,
+    //                     DepartmentName = dep != null ? dep.DepartmentName : "Ej tillsatt",
+    //                     EmployeeName = emp != null ? emp.EmployeeName : "Ej tillsatt"
+    //                   };
+    //  return errandList;
+    //}
+
+  }
+}

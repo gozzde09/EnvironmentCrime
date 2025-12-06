@@ -1,11 +1,15 @@
 ﻿using EnvironmentCrime.Models;
+using EnvironmentCrime.Models.AppDb;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EnvironmentCrime.Controllers
 {
   public class ManagerController : Controller
   {
+    // Dependency Injection to get the repository
     private readonly IEnvironmentCrimeRepository repository;
+
+    // Constructor to inject the repository
     public ManagerController(IEnvironmentCrimeRepository repo)
     {
       repository = repo;
@@ -13,6 +17,7 @@ namespace EnvironmentCrime.Controllers
     public ViewResult CrimeManager(int id)
     {
       ViewBag.ID = id;
+      // Pass the list of employees to the view using ViewBag
       ViewBag.ListOfEmployees = repository.Employees;
       return View();
     }

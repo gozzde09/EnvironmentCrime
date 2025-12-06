@@ -1,10 +1,11 @@
-﻿@{
+﻿@using EnvironmentCrime.Models.AppDb
+@{
 	Layout = "_ManagerLayout";
 }
 @model IEnvironmentCrimeRepository
 
 <h2>Ärenden</h2>
-<p class="info">Du är inloggad som avdelningschef</p>
+<p class="info">Du är inloggad som avdelningschef.</p>
 
 @if (TempData["Message"] != null)
 {
@@ -54,16 +55,17 @@
 		<th>Avdelning</th>
 		<th>Handläggare</th>
 	</tr>
-	@foreach (Errand errands in Model.Errands)
+	@foreach (var Errand in Model.GetErrands("manager"))
 	{
 		<tr>
-			<td>@errands.DateOfObservation.ToShortDateString()</td>
+			<td>@Errand.DateOfObservation.ToShortDateString()</td>
 			<td>
-				<a asp-controller="Manager" asp-action="CrimeManager" asp-route-id="@errands.ErrandId">@errands.RefNumber</a>
-			<td>@errands.TypeOfCrime</td>
-			<td>@errands.StatusId</td>
-			<td>@errands.DepartmentId</td>
-			<td>@errands.EmployeeId</td>
+				<a asp-controller="Manager" asp-action="CrimeManager" asp-route-id="@Errand.ErrandId">@Errand.RefNumber</a>
+			</td>
+			<td>@Errand.TypeOfCrime</td>
+			<td>@Errand.StatusName</td>
+			<td>@Errand.DepartmentName</td>
+			<td>@Errand.EmployeeName</td>
 		</tr>
 	}
 </table>

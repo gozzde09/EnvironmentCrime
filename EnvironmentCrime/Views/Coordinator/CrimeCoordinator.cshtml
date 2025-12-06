@@ -1,7 +1,7 @@
 ﻿@{
     Layout = "_CoordinatorLayout";
 }
-@model IEnumerable<Department>
+@model Department
 
 <h2>Detaljer för ärendet</h2>
 <p class="info">Du är inloggad som samordnare</p>
@@ -16,19 +16,13 @@
 
 <section id="bottomColumn">
     <form asp-controller="Coordinator" asp-action="SaveDepartment" method="post">
-        <h3>Redigera ärende</h3>
+        <h3>Redigera ärendet</h3>
         <input type="hidden" name="errandId" value="@ViewBag.ID" />
         <p>
             Ange enhet:
-            <select name="choosenDepartmentId">
-                <option value="">Välj avdelning</option>
-                @foreach (var department in Model)
-                {  @if (department.DepartmentName != "Småstads kommun")
-                    {
-                        <option value="@department.DepartmentId">@department.DepartmentName</option>
-                    }
-                }
-            </select>
+                <select asp-for="DepartmentId" asp-items="@(new SelectList(ViewBag.ListOfDepartments, "DepartmentId", "DepartmentName"))">
+                    <option value="">Välj avdelning</option>
+                </select>
         </p>
         <p><input class="button" type="submit" value="Spara"></p>
     </form>
