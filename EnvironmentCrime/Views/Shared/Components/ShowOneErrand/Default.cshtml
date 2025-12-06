@@ -26,13 +26,13 @@
 <section id="rightColumn">
     <h3>Utredning</h3>
     <p>
-        <span class="label">Status</span><br />@Model.StatusId
+        <span class="label">Status: </span><br />@Model.Status?.StatusName
     </p>
     <p>
-        <span class="label">Ansvarig avdelning: </span><br />@Model.DepartmentId
+        <span class="label">Ansvarig avdelning: </span><br />@Model.Department?.DepartmentName
     </p>
     <p>
-        <span class="label">Handläggare: </span><br />@Model.EmployeeId
+        <span class="label">Handläggare: </span><br />@Model.Employee?.EmployeeName
     </p>
     <p style="white-space: pre-line;">
         <span class="label">Ytterligare information: </span>

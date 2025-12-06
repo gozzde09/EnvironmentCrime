@@ -33,11 +33,16 @@ namespace EnvironmentCrime.Models
     [Display(Name = "Beskriv din observation (ex. namn på misstänkt person):")]
     public string? Observation { get; set; }
     public string? InvestigatorInfo { get; set; }
-    public string? InvestigatorAction { get; set; }
-    public string? StatusId { get; set; }
-    public string? DepartmentId { get; set; }
-    public string? EmployeeId { get; set; }
+    public string? InvestigatorAction { get; set; } 
     public ICollection<Sample>? Samples { get; set; }
     public ICollection<Picture>? Pictures { get; set; }
+    public string? StatusId { get; set; }
+    public ErrandStatus? Status { get; set; }
+
+    public string? DepartmentId { get; set; }
+    public Department? Department { get; set; }
+
+    public string? EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
   }
 }

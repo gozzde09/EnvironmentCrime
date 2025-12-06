@@ -11,17 +11,17 @@ namespace EnvironmentCrime.Models.AppDb
     private IHttpContextAccessor contextAccessor;
 
     // Constructor that accepts the database context via dependency injection
-    public EFEnvironmentCrimeRepository(ApplicationDbContext ctx, IHttpContextAccessor contextAccessor)
+    public EFEnvironmentCrimeRepository(ApplicationDbContext ctx, IHttpContextAccessor contextAcc)
     {
       context = ctx;
-      this.contextAccessor = contextAccessor;
+      contextAccessor = contextAcc;
     }
     // IQueryable properties to access each entity set
     public IQueryable<Department> Departments => context.Departments;
 
     public IQueryable<Employee> Employees => context.Employees;
 
-    public IQueryable<Errand> Errands => context.Errands.Include(e => e.Samples).Include(e => e.Pictures);
+    public IQueryable<Errand> Errands => context.Errands.Include(e => e.Status).Include(e => e.Department).Include(e => e.Employee).Include(e => e.Samples).Include(e => e.Pictures);
 
     public IQueryable<ErrandStatus> ErrandStatuses => context.ErrandStatuses;
 
@@ -156,6 +156,7 @@ namespace EnvironmentCrime.Models.AppDb
       }
       await context.SaveChangesAsync();
     }
+
     // Method to get employee details by username
     public Employee GetEmployee(string userName)
     {
@@ -183,28 +184,27 @@ namespace EnvironmentCrime.Models.AppDb
       if (employee == null)
         throw new InvalidOperationException("Användaren hittades inte i Employees-tabellen.");
 
-      var query =
-          // Join Errands with related tables to get necessary details
-          from errand in Errands
-          join status in ErrandStatuses on errand.StatusId equals status.StatusId
+      var query = from errand in Errands
+                  join s in ErrandStatuses on errand.StatusId equals s.StatusId
+                  join d in Departments on errand.DepartmentId equals d.DepartmentId into deptJoin
 
-          join department in Departments on errand.DepartmentId equals department.DepartmentId into deptJoin
-          from dep in deptJoin.DefaultIfEmpty()
+                  from dep in deptJoin.DefaultIfEmpty()
+                  join e in Employees on errand.EmployeeId equals e.EmployeeId into empJoin
 
-          join employeeJoin in Employees on errand.EmployeeId equals employeeJoin.EmployeeId into empJoin
-          from emp in empJoin.DefaultIfEmpty()
+                  from emp in empJoin.DefaultIfEmpty()
 
-            // Project the results into an anonymous object
-          select new
-          {
-            Errand = errand,
-            StatusName = status.StatusName,
-            DepartmentName = dep != null ? dep.DepartmentName : "Ej tillsatt",
-            EmployeeName = emp != null ? emp.EmployeeName : "Ej tillsatt",
-            // Include DepartmentId and EmployeeId for filtering
-            DepartmentId = dep.DepartmentId,
-            EmployeeId = emp.EmployeeId
-          };
+                    // Project the results into an anonymous object
+                  select new
+                  {
+                    Errand = errand,
+                    StatusName = s.StatusName,
+                    DepartmentName = dep != null ? dep.DepartmentName : "Ej tillsatt",
+                    EmployeeName = emp != null ? emp.EmployeeName : "Ej tillsatt",
+                    // Include DepartmentId and EmployeeId for filtering
+                    DepartmentId = dep.DepartmentId,
+                    EmployeeId = emp.EmployeeId
+                  };
+
       switch (role.ToLower())
       {
         case "coordinator":
@@ -224,18 +224,34 @@ namespace EnvironmentCrime.Models.AppDb
         default:
           throw new ArgumentException("Ogiltig roll.");
       }
-      var result =
-          query.OrderByDescending(x => x.Errand.RefNumber)
-               .Select(x => new Case
-               {
-                 ErrandId = x.Errand.ErrandId,
-                 DateOfObservation = x.Errand.DateOfObservation,
-                 RefNumber = x.Errand.RefNumber,
-                 TypeOfCrime = x.Errand.TypeOfCrime,
-                 StatusName = x.StatusName,
-                 DepartmentName = x.DepartmentName,
-                 EmployeeName = x.EmployeeName
-               });
+
+      // Dynamic filtering based on dropdown or search
+      //if (!string.IsNullOrWhiteSpace(status) && status != "Välj alla")
+      //  query = query.Where(x => x.StatusName == status);
+
+      //if (!string.IsNullOrWhiteSpace(department) && department != "Välj alla")
+      //  query = query.Where(x => x.DepartmentName == department);
+
+      //if (!string.IsNullOrWhiteSpace(employeeName) && employeeName != "Välj alla")
+      //{
+      //  query = query.Where(x => x.EmployeeName == employeeName);
+      //}
+
+      //if (!string.IsNullOrWhiteSpace(caseNumber))
+      //  query = query.Where(x => x.Errand.RefNumber.Contains(caseNumber));
+
+      // Project the filtered results into Case objects
+      var result = query.OrderByDescending(x => x.Errand.RefNumber)
+                        .Select(x => new Case
+                        {
+                          ErrandId = x.Errand.ErrandId,
+                          DateOfObservation = x.Errand.DateOfObservation,
+                          RefNumber = x.Errand.RefNumber,
+                          TypeOfCrime = x.Errand.TypeOfCrime,
+                          StatusName = x.StatusName,
+                          DepartmentName = x.DepartmentName,
+                          EmployeeName = x.EmployeeName
+                        });
 
       return result;
     }
@@ -245,17 +261,91 @@ namespace EnvironmentCrime.Models.AppDb
     {
       var userName = contextAccessor.HttpContext?.User?.Identity?.Name;
 
-      var errandList = from emp0 in Employees
+      var errandList = // Join Employees with Departments to get employees in the manager's department
+                       from emp0 in Employees
                        join dep in Departments on emp0.DepartmentId equals dep.DepartmentId
                        join emp1 in Employees on dep.DepartmentId equals emp1.DepartmentId
                        where emp0.EmployeeId == userName
 
                        select new Case
                        {
-                         EmployeeName = (emp1.EmployeeName)
+                         EmployeeId = emp1.EmployeeId,
+                         EmployeeName = emp1.EmployeeName
                        };
 
       return errandList;
     }
+    public IQueryable<Case> FilteredErrands(string role, string? status, string? department, string? employeeName, string? caseNumber)
+    {
+      var userName = contextAccessor.HttpContext?.User?.Identity?.Name;
+      if (string.IsNullOrWhiteSpace(userName))
+        throw new InvalidOperationException("Ingen inloggad användare hittades.");
+
+      var employee = GetEmployee(userName);
+      if (employee == null)
+        throw new InvalidOperationException("Användaren hittades inte i Employees-tabellen.");
+
+      var query = from errand in Errands
+                  join s in ErrandStatuses on errand.StatusId equals s.StatusId
+                  join d in Departments on errand.DepartmentId equals d.DepartmentId into deptJoin
+                  from dep in deptJoin.DefaultIfEmpty()
+                  join e in Employees on errand.EmployeeId equals e.EmployeeId into empJoin
+                  from emp in empJoin.DefaultIfEmpty()
+                  select new
+                  {
+                    Errand = errand,
+                    StatusName = s.StatusName,
+                    DepartmentName = dep != null ? dep.DepartmentName : "Ej tillsatt",
+                    EmployeeName = emp != null ? emp.EmployeeName : "Ej tillsatt",
+                    DepartmentId = dep.DepartmentId,
+                    EmployeeId = emp.EmployeeId
+                  };
+
+      // Filtrera enligt roll
+      switch (role.ToLower())
+      {
+        case "coordinator":
+          // Ser alla ärenden
+          break;
+        case "manager":
+          query = query.Where(x => x.DepartmentId == employee.DepartmentId);
+          break;
+        case "investigator":
+          query = query.Where(x => x.EmployeeId == employee.EmployeeId);
+          break;
+        default:
+          throw new ArgumentException("Ogiltig roll.");
+      }
+
+      // Dynamisk filtrering baserat på dropdown eller sökning
+      if (!string.IsNullOrWhiteSpace(status) && status != "Välj alla")
+        query = query.Where(x => x.StatusName == status);
+
+      if (!string.IsNullOrWhiteSpace(department) && department != "Välj alla")
+        query = query.Where(x => x.DepartmentName == department);
+
+      if (!string.IsNullOrWhiteSpace(employeeName) && employeeName != "Välj alla")
+      {
+        query = query.Where(x => x.EmployeeName == employeeName);
+      }
+
+      if (!string.IsNullOrWhiteSpace(caseNumber))
+        query = query.Where(x => x.Errand.RefNumber.Contains(caseNumber));
+
+      var result = query.OrderByDescending(x => x.Errand.RefNumber)
+                        .Select(x => new Case
+                        {
+                          ErrandId = x.Errand.ErrandId,
+                          DateOfObservation = x.Errand.DateOfObservation,
+                          RefNumber = x.Errand.RefNumber,
+                          TypeOfCrime = x.Errand.TypeOfCrime,
+                          StatusName = x.StatusName,
+                          DepartmentName = x.DepartmentName,
+                          EmployeeName = x.EmployeeName
+                        });
+
+      return result;
+    }
+
   }
 }

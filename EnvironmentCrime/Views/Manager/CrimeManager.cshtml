@@ -20,7 +20,7 @@
         <input type="hidden" name="errandId" value="@ViewBag.ID" />
         <p>
             Ange handläggare:
-            <select asp-for="EmployeeId" asp-items="@(new SelectList(ViewBag.ListOfEmployees, "EmployeeName", "EmployeeName"))">
+            <select asp-for="EmployeeId" asp-items="@(new SelectList(ViewBag.ListOfEmployees, "EmployeeId", "EmployeeName"))">
                 <option value="">Välj handläggare</option>
             </select>
         </p>
