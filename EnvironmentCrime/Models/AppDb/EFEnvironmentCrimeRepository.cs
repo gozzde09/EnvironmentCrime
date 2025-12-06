@@ -156,7 +156,8 @@ namespace EnvironmentCrime.Models.AppDb
       }
       await context.SaveChangesAsync();
     }
-    public Employee GetEmployee(String userName)
+    // Method to get employee details by username
+    public Employee GetEmployee(string userName)
     {
       Employee emp = new Employee();
       foreach (Employee em in Employees)
@@ -169,68 +170,64 @@ namespace EnvironmentCrime.Models.AppDb
       return emp;
 
     }
+    // Method to get errands based on user role
     public IQueryable<Case> GetErrands(string role)
-{
-    var userName = contextAccessor.HttpContext?.User?.Identity?.Name;
+    {
+      var userName = contextAccessor.HttpContext?.User?.Identity?.Name;
 
-    if (string.IsNullOrWhiteSpace(userName))
+      if (string.IsNullOrWhiteSpace(userName))
         throw new InvalidOperationException("Ingen inloggad användare hittades.");
 
-    // Kullanıcı bilgisi (departman, employeeId vs.)
-    var employee = GetEmployee(userName);
+      var employee = GetEmployee(userName);
 
-    if (employee == null)
+      if (employee == null)
         throw new InvalidOperationException("Användaren hittades inte i Employees-tabellen.");
 
-    // Temel sorgu
-    var query =
-        from errand in Errands
-        join status in ErrandStatuses on errand.StatusId equals status.StatusId
+      var query =
+          // Join Errands with related tables to get necessary details
+          from errand in Errands
+          join status in ErrandStatuses on errand.StatusId equals status.StatusId
 
-        join department in Departments on errand.DepartmentId equals department.DepartmentId into deptJoin
-        from dep in deptJoin.DefaultIfEmpty()
+          join department in Departments on errand.DepartmentId equals department.DepartmentId into deptJoin
+          from dep in deptJoin.DefaultIfEmpty()
 
-        join employeeJoin in Employees on errand.EmployeeId equals employeeJoin.EmployeeId into empJoin
-        from emp in empJoin.DefaultIfEmpty()
+          join employeeJoin in Employees on errand.EmployeeId equals employeeJoin.EmployeeId into empJoin
+          from emp in empJoin.DefaultIfEmpty()
 
-        select new
-        {
+            // Project the results into an anonymous object
+          select new
+          {
             Errand = errand,
             StatusName = status.StatusName,
             DepartmentName = dep != null ? dep.DepartmentName : "Ej tillsatt",
             EmployeeName = emp != null ? emp.EmployeeName : "Ej tillsatt",
-
-            // Filtreleme için gerekli alanlar
+            // Include DepartmentId and EmployeeId for filtering
             DepartmentId = dep.DepartmentId,
             EmployeeId = emp.EmployeeId
-        };
-
-    // Role göre filtreleme
-    switch (role.ToLower())
-    {
+          };
+      switch (role.ToLower())
+      {
         case "coordinator":
-            // Coordinator → tüm işleri görür
-            break;
+          // Sees all the cases
+          break;
 
         case "manager":
-            // Manager → sadece kendi departmanının işleri
-            query = query.Where(x => x.DepartmentId == employee.DepartmentId);
-            break;
+          // Sees cases assigned to their department
+          query = query.Where(x => x.DepartmentId == employee.DepartmentId);
+          break;
 
         case "investigator":
-            // Investigator → sadece kendi adına atanmış işler
-            query = query.Where(x => x.EmployeeId == employee.EmployeeId);
-            break;
+          // Sees cases assigned to them
+          query = query.Where(x => x.EmployeeId == employee.EmployeeId);
+          break;
 
         default:
-            throw new ArgumentException("Ogiltig roll.");
-    }
-
-    // Son projeksiyon
-    var result =
-        query.OrderByDescending(x => x.Errand.RefNumber)
-             .Select(x => new Case
-             {
+          throw new ArgumentException("Ogiltig roll.");
+      }
+      var result =
+          query.OrderByDescending(x => x.Errand.RefNumber)
+               .Select(x => new Case
+               {
                  ErrandId = x.Errand.ErrandId,
                  DateOfObservation = x.Errand.DateOfObservation,
                  RefNumber = x.Errand.RefNumber,
@@ -238,35 +235,27 @@ namespace EnvironmentCrime.Models.AppDb
                  StatusName = x.StatusName,
                  DepartmentName = x.DepartmentName,
                  EmployeeName = x.EmployeeName
-             });
+               });
 
-    return result;
-}
+      return result;
+    }
 
+    // Gets manager's employees by their association depId. 
+    public IQueryable<Case> GetManagerEmployeeList()
+    {
+      var userName = contextAccessor.HttpContext?.User?.Identity?.Name;
 
-    //public IQueryable<Case>GetErrands()
-    //{
-    //  var errandList = from errand in Errands
-    //                   join status in ErrandStatuses on errand.StatusId equals status.StatusId
-    //                   join department in Departments on errand.DepartmentId equals department.DepartmentId into departments
-    //                   from dep in departments.DefaultIfEmpty()
+      var errandList = from emp0 in Employees
+                       join dep in Departments on emp0.DepartmentId equals dep.DepartmentId
+                       join emp1 in Employees on dep.DepartmentId equals emp1.DepartmentId
+                       where emp0.EmployeeId == userName
 
-    //                   join employee in Employees on errand.EmployeeId equals employee.EmployeeId into employees
-    //                   from emp in employees.DefaultIfEmpty()
-    //                   orderby errand.RefNumber descending
+                       select new Case
+                       {
+                         EmployeeName = (emp1.EmployeeName)
+                       };
 
-    //                   select new Case
-    //                   {
-    //                     DateOfObservation = errand.DateOfObservation,
-    //                     ErrandId = errand.ErrandId,
-    //                     RefNumber = errand.RefNumber,
-    //                     TypeOfCrime = errand.TypeOfCrime,
-    //                     StatusName = status.StatusName,
-    //                     DepartmentName = dep != null ? dep.DepartmentName : "Ej tillsatt",
-    //                     EmployeeName = emp != null ? emp.EmployeeName : "Ej tillsatt"
-    //                   };
-    //  return errandList;
-    //}
-
+      return errandList;
+    }
   }
 }

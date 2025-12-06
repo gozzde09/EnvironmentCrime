@@ -18,7 +18,7 @@ namespace EnvironmentCrime.Controllers
     {
       ViewBag.ID = id;
       // Pass the list of employees to the view using ViewBag
-      ViewBag.ListOfEmployees = repository.Employees;
+      ViewBag.ListOfEmployees = repository.GetManagerEmployeeList();
       return View();
     }
 

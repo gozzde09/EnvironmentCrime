@@ -1,6 +1,6 @@
 ﻿@using EnvironmentCrime.Models.AppDb
 @{
-	Layout = "_ManagerLayout";
+    Layout = "_ManagerLayout";
 }
 @model IEnvironmentCrimeRepository
 
@@ -9,63 +9,64 @@
 
 @if (TempData["Message"] != null)
 {
-	<div class="alert alert-success">@TempData["Message"]</div>
+    <div class="alert alert-success">@TempData["Message"]</div>
 }
 
 <table id="managerForm">
-	<tr>
-		<td class="label">Välj status:</td>
-		<td class="label">Välj handläggare:</td>
-		<td>&nbsp;</td>
-		<td class="label">Ärendenummer:</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>
-			<select name="status">
-				<option selected="selected">Välj alla</option>
-				@foreach (var errandStatus in Model.ErrandStatuses)
-				{
-					<option value="@errandStatus.StatusId">@errandStatus.StatusName</option>
-				}
-			</select>
-		</td>
-		<td>
-			<select name="investigator">
-				<option selected="selected">Välj alla</option>
-				@foreach (var investigator in Model.Employees)
-				{
-					<option value="@investigator.EmployeeId">@investigator.EmployeeName</option>
-				}
-			</select>
-		</td>
-		<td><input class="button" type="submit" value="Hämta lista"></td>
-		<td><input name="casenumber"></td>
-		<td><input class="button" type="submit" value="Sök"></td>
-	</tr>
+    <tr>
+        <td class="label">Välj status:</td>
+        <td class="label">Välj handläggare:</td>
+        <td>&nbsp;</td>
+        <td class="label">Ärendenummer:</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>
+            <select name="status">
+                <option selected="selected">Välj alla</option>
+                @foreach (var errandStatus in Model.ErrandStatuses)
+                {
+                    <option value="@errandStatus.StatusId">@errandStatus.StatusName</option>
+                }
+            </select>
+        </td>
+        <td>
+            <select name="investigator">
+                <option selected="selected">Välj alla</option>
+                @foreach (var emp in Model.GetManagerEmployeeList())
+                {
+                    <option value="@emp.EmployeeName">@emp.EmployeeName</option>
+
+                }
+            </select>
+        </td>
+        <td><input class="button" type="submit" value="Hämta lista"></td>
+        <td><input name="casenumber"></td>
+        <td><input class="button" type="submit" value="Sök"></td>
+    </tr>
 </table>
 
 <!--Errand list-->
 <table>
-	<tr>
-		<th>Ärende anmält</th>
-		<th>Ärendenummer</th>
-		<th>Miljöbrott</th>
-		<th>Status</th>
-		<th>Avdelning</th>
-		<th>Handläggare</th>
-	</tr>
-	@foreach (var Errand in Model.GetErrands("manager"))
-	{
-		<tr>
-			<td>@Errand.DateOfObservation.ToShortDateString()</td>
-			<td>
-				<a asp-controller="Manager" asp-action="CrimeManager" asp-route-id="@Errand.ErrandId">@Errand.RefNumber</a>
-			</td>
-			<td>@Errand.TypeOfCrime</td>
-			<td>@Errand.StatusName</td>
-			<td>@Errand.DepartmentName</td>
-			<td>@Errand.EmployeeName</td>
-		</tr>
-	}
+    <tr>
+        <th>Ärende anmält</th>
+        <th>Ärendenummer</th>
+        <th>Miljöbrott</th>
+        <th>Status</th>
+        <th>Avdelning</th>
+        <th>Handläggare</th>
+    </tr>
+    @foreach (var Errand in Model.GetErrands("manager"))
+    {
+        <tr>
+            <td>@Errand.DateOfObservation.ToShortDateString()</td>
+            <td>
+                <a asp-controller="Manager" asp-action="CrimeManager" asp-route-id="@Errand.ErrandId">@Errand.RefNumber</a>
+            </td>
+            <td>@Errand.TypeOfCrime</td>
+            <td>@Errand.StatusName</td>
+            <td>@Errand.DepartmentName</td>
+            <td>@Errand.EmployeeName</td>
+        </tr>
+    }
 </table>

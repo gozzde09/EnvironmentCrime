@@ -37,7 +37,9 @@
 
     // Insert file (sample or picture) associated with an errand - by investigator
     Task InsertFileAsync(string dirPath, int errandId, string uniqueFileName);
-
+    // Get errands based on user role
     IQueryable<Case> GetErrands(string role);
+    // Get errands for manager's employees
+    public IQueryable<Case> GetManagerEmployeeList();
   }
 }
