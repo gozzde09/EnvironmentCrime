@@ -1,56 +1,77 @@
 ﻿@using EnvironmentCrime.Models.AppDb
 @{
-	Layout = "_InvestigatorLayout";
+    Layout = "_InvestigatorLayout";
 }
 @model IEnvironmentCrimeRepository
+@{
+    string? statusFilter = null;
+    string? departmentFilter = null;
+    string? employeeFilter = null;
+    string? caseNumberFilter = null;
+
+    if (Context.Request.HasFormContentType)
+    {
+        var form = Context.Request.Form;
+
+        statusFilter = form["status"].FirstOrDefault();
+        caseNumberFilter = form["casenumber"].FirstOrDefault();
+
+    }
+    var errands = Model.FilteredErrands("investigator", statusFilter, departmentFilter, employeeFilter, caseNumberFilter);
+}
 
 <h2>Ärenden</h2>
-<p class="info">Du är inloggad som handläggare.</p> 
-
-<table id="managerForm">
-	<tr>
-		<td class="label">Välj status:</td>
-		<td>&nbsp;</td>
-		<td class="label">Ärendenummer:</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>
-			<select name="status">
-				<option selected="selected">Välj alla</option>
-				@foreach (var errandStatuses in Model.ErrandStatuses)
-				{
-					<option value="@errandStatuses.StatusId">@errandStatuses.StatusName</option>
-				}
-			</select>
-		</td>
-		<td><input class="button" type="submit" value="Hämta lista"></td>
-		<td><input name="casenumber"></td>
-		<td><input class="button" type="submit" value="Sök"></td>
-	</tr>
-</table>
-
+<p class="info">Du är inloggad som handläggare.</p>
+<form method="post">
+    <table id="investigatorForm">
+        <tr>
+            <td class="label">Välj status:</td>
+            <td>&nbsp;</td>
+            <td class="label">Ärendenummer:</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <select name="status">
+                    <option selected="selected">Välj alla</option>
+                    @foreach (var errandStatuses in Model.ErrandStatuses)
+                    {
+                        <option value="@errandStatuses.StatusName">@errandStatuses.StatusName</option>
+                    }
+                </select>
+            </td>
+            <td><input class="button" type="submit" value="Hämta lista"></td>
+            <td><input name="casenumber"></td>
+            <td><input class="button" type="submit" value="Sök"></td>
+        </tr>
+    </table>
+</form>
 <!--Errand list-->
-<table>
-	<tr>
-		<th>Ärende anmält</th>
-		<th>Ärendenummer</th>
-		<th>Miljöbrott</th>
-		<th>Status</th>
-		<th>Avdelning</th>
-		<th>Handläggare</th>
-	</tr>
-	@foreach (var Errand in Model.GetErrands("investigator"))
-	{
-		<tr>
-			<td>@Errand.DateOfObservation.ToShortDateString()</td>
-			<td>
-				<a asp-controller="Investigator" asp-action="CrimeInvestigator" asp-route-id="@Errand.ErrandId">@Errand.RefNumber</a>
-			</td>
-			<td>@Errand.TypeOfCrime</td>
-			<td>@Errand.StatusName</td>
-			<td>@Errand.DepartmentName</td>
-			<td>@Errand.EmployeeName</td>
-		</tr>
-	}
-</table>
+@if (!errands.Any())
+{
+    <p class="info">Inga ärenden hittades för de valda kriterierna.</p>
+}
+else
+{
+    <table>
+        <tr>
+            <th>Ärende anmält</th>
+            <th>Ärendenummer</th>
+            <th>Miljöbrott</th>
+            <th>Status</th>
+            <th>Avdelning</th>
+            <th>Handläggare</th>
+        </tr>
+        @foreach (var errand in errands)
+        {
+            <tr>
+                <td>@errand.DateOfObservation.ToShortDateString()</td>
+                <td><a asp-controller="Investigator" asp-action="CrimeInvestigator" asp-route-id="@errand.ErrandId">@errand.RefNumber</a></td>
+                <td>@errand.TypeOfCrime</td>
+                <td>@errand.StatusName</td>
+                <td>@errand.DepartmentName</td>
+                <td>@errand.EmployeeName</td>
+            </tr>
+        }
+    </table>
+}
