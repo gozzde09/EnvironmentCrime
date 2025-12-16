@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Case>
+
+@if (!Model.Any())
+{
+    <p class="info">Inga ärenden hittades för de valda kriterierna.</p>
+}
+else
+{
+    <table>
+        <tr>
+            <th>Ärende anmält</th>
+            <th>Ärendenummer</th>
+            <th>Miljöbrott</th>
+            <th>Status</th>
+            <th>Avdelning</th>
+            <th>Handläggare</th>
+        </tr>
+
+        @foreach (var errand in Model)
+        {
+            <tr>
+                <td>@errand.DateOfObservation.ToShortDateString()</td>
+                <!-- Errand link generation based on controller name -->
+                <td>
+                    <a asp-controller="@ViewContext.RouteData.Values["controller"]"
+                       asp-action="Crime@(ViewContext.RouteData.Values["controller"])"
+                       asp-route-id="@errand.ErrandId">
+                        @errand.RefNumber
+                    </a>
+                </td>
+
+                <td>@errand.TypeOfCrime</td>
+                <td>@errand.StatusName</td>
+                <td>@errand.DepartmentName</td>
+                <td>@errand.EmployeeName</td>
+            </tr>
+        }
+    </table>
+}

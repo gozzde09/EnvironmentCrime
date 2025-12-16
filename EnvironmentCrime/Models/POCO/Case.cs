@@ -2,12 +2,11 @@
 
 namespace EnvironmentCrime.Models
 {
-  /*
- * En lista med attribut, finns ej i databasen utan är enbart en hjälpklass för att kunna skicka med attribut till vyn
- */
+  // A list of attributes that does not exist in the database; it is a helper class used to pass attributes to the view.
   [Keyless]
   public class Case
   {
+    
     public string? EmployeeName { get; set; }
     public string? DepartmentName { get; set; }
     public string? RefNumber { get; set; }

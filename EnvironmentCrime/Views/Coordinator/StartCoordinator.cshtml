@@ -49,10 +49,15 @@
             <td>
                 <select name="department">
                     <option selected="selected">Välj alla</option>
-                    @foreach (var department in Model.Departments)
+
+                    @foreach (var department in Model.Departments
+                                        .Where(d => d.DepartmentName != "Småstads kommun"))
                     {
-                        <option value="@department.DepartmentName">@department.DepartmentName</option>
+                        <option value="@department.DepartmentName">
+                            @department.DepartmentName
+                        </option>
                     }
+
                 </select>
             </td>
             <td><input class="button" type="submit" value="Hämta lista"></td>
@@ -62,31 +67,10 @@
     </table>
 </form>
 <!--Errand list-->
-@if (!errands.Any())
-{
-    <p class="info">Inga ärenden hittades för de valda kriterierna.</p>
-}
-else
-{
-    <table>
-        <tr>
-            <th>Ärende anmält</th>
-            <th>Ärendenummer</th>
-            <th>Miljöbrott</th>
-            <th>Status</th>
-            <th>Avdelning</th>
-            <th>Handläggare</th>
-        </tr>
-        @foreach (var errand in errands)
-        {
-            <tr>
-                <td>@errand.DateOfObservation.ToShortDateString()</td>
-                <td><a asp-controller="Coordinator" asp-action="CrimeCoordinator" asp-route-id="@errand.ErrandId">@errand.RefNumber</a></td>
-                <td>@errand.TypeOfCrime</td>
-                <td>@errand.StatusName</td>
-                <td>@errand.DepartmentName</td>
-                <td>@errand.EmployeeName</td>
-            </tr>
-        }
-    </table>
-}
+@await Component.InvokeAsync("ErrandList", new {
+role = "coordinator",
+    statusFilter,
+    departmentFilter,
+    employeeFilter,
+    caseNumberFilter
+})

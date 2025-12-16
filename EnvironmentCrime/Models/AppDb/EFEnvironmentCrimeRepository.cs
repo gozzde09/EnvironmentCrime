@@ -94,7 +94,7 @@ namespace EnvironmentCrime.Models.AppDb
         // Update the InvestigatorInfo of the errand
         errandDb.InvestigatorInfo = errandDb.InvestigatorInfo + "\n" + investigatorInfo;
         errandDb.StatusId = "S_B";
-        errandDb.EmployeeId = "";
+        errandDb.EmployeeId = " ";
       }
       context.SaveChanges();
     }
@@ -171,91 +171,6 @@ namespace EnvironmentCrime.Models.AppDb
       return emp;
 
     }
-    // Method to get errands based on user role
-    public IQueryable<Case> GetErrands(string role)
-    {
-      var userName = contextAccessor.HttpContext?.User?.Identity?.Name;
-
-      if (string.IsNullOrWhiteSpace(userName))
-        throw new InvalidOperationException("Ingen inloggad användare hittades.");
-
-      var employee = GetEmployee(userName);
-
-      if (employee == null)
-        throw new InvalidOperationException("Användaren hittades inte i Employees-tabellen.");
-
-      var query = from errand in Errands
-                  join s in ErrandStatuses on errand.StatusId equals s.StatusId
-                  join d in Departments on errand.DepartmentId equals d.DepartmentId into deptJoin
-
-                  from dep in deptJoin.DefaultIfEmpty()
-                  join e in Employees on errand.EmployeeId equals e.EmployeeId into empJoin
-
-                  from emp in empJoin.DefaultIfEmpty()
-
-                    // Project the results into an anonymous object
-                  select new
-                  {
-                    Errand = errand,
-                    StatusName = s.StatusName,
-                    DepartmentName = dep != null ? dep.DepartmentName : "Ej tillsatt",
-                    EmployeeName = emp != null ? emp.EmployeeName : "Ej tillsatt",
-                    // Include DepartmentId and EmployeeId for filtering
-                    DepartmentId = dep.DepartmentId,
-                    EmployeeId = emp.EmployeeId
-                  };
-
-      switch (role.ToLower())
-      {
-        case "coordinator":
-          // Sees all the cases
-          break;
-
-        case "manager":
-          // Sees cases assigned to their department
-          query = query.Where(x => x.DepartmentId == employee.DepartmentId);
-          break;
-
-        case "investigator":
-          // Sees cases assigned to them
-          query = query.Where(x => x.EmployeeId == employee.EmployeeId);
-          break;
-
-        default:
-          throw new ArgumentException("Ogiltig roll.");
-      }
-
-      // Dynamic filtering based on dropdown or search
-      //if (!string.IsNullOrWhiteSpace(status) && status != "Välj alla")
-      //  query = query.Where(x => x.StatusName == status);
-
-      //if (!string.IsNullOrWhiteSpace(department) && department != "Välj alla")
-      //  query = query.Where(x => x.DepartmentName == department);
-
-      //if (!string.IsNullOrWhiteSpace(employeeName) && employeeName != "Välj alla")
-      //{
-      //  query = query.Where(x => x.EmployeeName == employeeName);
-      //}
-
-      //if (!string.IsNullOrWhiteSpace(caseNumber))
-      //  query = query.Where(x => x.Errand.RefNumber.Contains(caseNumber));
-
-      // Project the filtered results into Case objects
-      var result = query.OrderByDescending(x => x.Errand.RefNumber)
-                        .Select(x => new Case
-                        {
-                          ErrandId = x.Errand.ErrandId,
-                          DateOfObservation = x.Errand.DateOfObservation,
-                          RefNumber = x.Errand.RefNumber,
-                          TypeOfCrime = x.Errand.TypeOfCrime,
-                          StatusName = x.StatusName,
-                          DepartmentName = x.DepartmentName,
-                          EmployeeName = x.EmployeeName
-                        });
-
-      return result;
-    }
-
     // Gets manager's employees by their association depId. 
     public IQueryable<Case> GetManagerEmployeeList()
     {
@@ -274,7 +189,7 @@ namespace EnvironmentCrime.Models.AppDb
                        };
 
       return errandList;
-    }
+    }    
     public IQueryable<Case> FilteredErrands(string role, string? status, string? department, string? employeeName, string? caseNumber)
     {
       var userName = contextAccessor.HttpContext?.User?.Identity?.Name;
@@ -284,7 +199,7 @@ namespace EnvironmentCrime.Models.AppDb
       var employee = GetEmployee(userName);
       if (employee == null)
         throw new InvalidOperationException("Användaren hittades inte i Employees-tabellen.");
-
+      // Filtered by status, department, employeeName, and caseNumber
       var query = from errand in Errands
                   join s in ErrandStatuses on errand.StatusId equals s.StatusId
                   join d in Departments on errand.DepartmentId equals d.DepartmentId into deptJoin
@@ -294,18 +209,18 @@ namespace EnvironmentCrime.Models.AppDb
                   select new
                   {
                     Errand = errand,
-                    StatusName = s.StatusName,
+                    s.StatusName,
                     DepartmentName = dep != null ? dep.DepartmentName : "Ej tillsatt",
                     EmployeeName = emp != null ? emp.EmployeeName : "Ej tillsatt",
-                    DepartmentId = dep.DepartmentId,
-                    EmployeeId = emp.EmployeeId
+                    dep.DepartmentId,
+                    emp.EmployeeId
                   };
 
-      // Filtrera enligt roll
+      // Get errands based on user role 
       switch (role.ToLower())
       {
         case "coordinator":
-          // Ser alla ärenden
+          // Sees all the cases
           break;
         case "manager":
           query = query.Where(x => x.DepartmentId == employee.DepartmentId);
@@ -317,7 +232,7 @@ namespace EnvironmentCrime.Models.AppDb
           throw new ArgumentException("Ogiltig roll.");
       }
 
-      // Dynamisk filtrering baserat på dropdown eller sökning
+      // Dynamic filtering based on dropdown or search
       if (!string.IsNullOrWhiteSpace(status) && status != "Välj alla")
         query = query.Where(x => x.StatusName == status);
 

@@ -39,8 +39,7 @@
     Task InsertFileAsync(string dirPath, int errandId, string uniqueFileName);
     // Get errands for manager's employees
     public IQueryable<Case> GetManagerEmployeeList();
-    public IQueryable<Case> GetErrands(string role);
-
+    
     // Get filtered errands based on role and optional filters
     public IQueryable<Case> FilteredErrands(string role, string? status , string? department , string? employeeName, string? caseNumber );
   }
