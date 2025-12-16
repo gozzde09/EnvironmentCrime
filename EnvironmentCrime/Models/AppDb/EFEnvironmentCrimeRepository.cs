@@ -94,7 +94,7 @@ namespace EnvironmentCrime.Models.AppDb
         // Update the InvestigatorInfo of the errand
         errandDb.InvestigatorInfo = errandDb.InvestigatorInfo + "\n" + investigatorInfo;
         errandDb.StatusId = "S_B";
-        errandDb.EmployeeId = " ";
+        errandDb.EmployeeId = null;
       }
       context.SaveChanges();
     }

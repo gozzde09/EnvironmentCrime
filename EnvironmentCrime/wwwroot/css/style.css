@@ -61,7 +61,7 @@ input, textarea, select {
         background: #888;
     }
 
-.field-validation-error {
+.field-validation-error, .validation-summary-errors {
     color: #dc3545;
 }
 
